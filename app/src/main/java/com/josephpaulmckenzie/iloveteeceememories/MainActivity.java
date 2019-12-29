@@ -39,6 +39,7 @@ public class MainActivity extends AppCompatActivity
         ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = manager.getActiveNetworkInfo();
 
+        // TODO update the way we check for network status currently using deprecated method
         if (networkInfo != null && networkInfo.isConnectedOrConnecting()){
 //            Log.i("joe", String.valueOf(networkInfo.isConnectedOrConnecting()));
             Log.i("Internet Status","Internet Connected");
