@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "62224134071",
+    "firebase_url": "https://joes-react-native-app.firebaseio.com",
+    "project_id": "joes-react-native-app",
+    "storage_bucket": "joes-react-native-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:62224134071:android:72553516a0ba6448290232",
+        "android_client_info": {
+          "package_name": "com.josephpaulmckenzie.iloveteeceememories"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "62224134071-rm5l26g7k07bsc85lb65tbad4du0dskr.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCKEFTyTbVZ8tg5f0wATYi5U1u0ZJoUdw0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "62224134071-rm5l26g7k07bsc85lb65tbad4du0dskr.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

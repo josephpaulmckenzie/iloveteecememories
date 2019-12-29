@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">Navigation Drawer Demo</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="action_settings">Settings</string>
+    <string name="profile_name">Teecee Graham</string>
+    <string name="text_website">teecee@iloveteecee.com</string>
+    <string name="teecee_main_heading">I Love Teecee \n Memories</string>
+    <string name="app_description"></string>
+    <string name="an_app_for_teecee_n_memories">An app for Teecee   Memories</string>
+</resources>
