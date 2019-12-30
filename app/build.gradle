@@ -38,6 +38,8 @@ dependencies {
     //Firebase SDK
     implementation 'com.google.firebase:firebase-core:16.0.6'
     implementation "com.google.firebase:firebase-storage:19.1.0"
+    implementation 'com.google.firebase:firebase-database:19.2.0'
+
 }
 
 
