@@ -75,7 +75,7 @@ public class MainActivity extends AppCompatActivity
                 Log.i("Teecee Love","1 Love sent");
                 // Currently lets just hardcode 1 for the new loves, however we may want to make this
                 // changeable.... maybe? Probably because i'll want to send a million at once sometimes
-//                getTeeceeLoves(1);
+                getTeeceeLoves(1);
             }
         });
 
@@ -200,6 +200,38 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
+    /**
+     * Sends love(s) to the database to keep track of teecee love points ( No limit on the love <3 )
+     */
 
+        private void getTeeceeLoves(final int newLoves){
+            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            final DatabaseReference myRef = database.getReference("Loves");
+            final String[] hello = new String[2];
 
+            // Read from the database
+            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+                @RequiresApi(api = Build.VERSION_CODES.N)
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    // This method is called once with the initial value and again
+                    // whenever data at this location is updated.
+                    Long value = dataSnapshot.getValue(Long.class);
+                    int currentLoves = Math.toIntExact(value);
+                    int totalNewLoveCount = currentLoves + newLoves;
+                    myRef.setValue(totalNewLoveCount);
+                    Log.d("Teecee Loves", "Current love count is: " + value);
+                    ViewGroup view = findViewById(android.R.id.content);
+                    Snackbar.make(view,"Current Teecee Loves: " + totalNewLoveCount,
+                            Snackbar.LENGTH_LONG).show();
+                }
+
+                @Override
+                public void onCancelled(DatabaseError error) {
+                    // Failed to read value
+                    Log.w("Error", "Failed to read value.", error.toException());
+                }
+            });
+
+        }
 }
