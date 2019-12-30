@@ -203,6 +203,16 @@ public class MainActivity extends AppCompatActivity
     /**
      * Sends love(s) to the database to keep track of teecee love points ( No limit on the love <3 )
      */
+        private void addNewLoves(int totalNewLoveCount){
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
+            DatabaseReference myRef = database.getReference("Loves");
+            Log.i("totalNewLoveCount", String.valueOf(totalNewLoveCount));
+            myRef.setValue(totalNewLoveCount);
+            ViewGroup view = findViewById(android.R.id.content);
+            Snackbar.make(view,"Current Teecee Loves: " + totalNewLoveCount,
+                    Snackbar.LENGTH_LONG).show();
+        }
+
 
         private void getTeeceeLoves(final int newLoves){
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -219,11 +229,7 @@ public class MainActivity extends AppCompatActivity
                     Long value = dataSnapshot.getValue(Long.class);
                     int currentLoves = Math.toIntExact(value);
                     int totalNewLoveCount = currentLoves + newLoves;
-                    myRef.setValue(totalNewLoveCount);
-                    Log.d("Teecee Loves", "Current love count is: " + value);
-                    ViewGroup view = findViewById(android.R.id.content);
-                    Snackbar.make(view,"Current Teecee Loves: " + totalNewLoveCount,
-                            Snackbar.LENGTH_LONG).show();
+                    addNewLoves(totalNewLoveCount);
                 }
 
                 @Override
