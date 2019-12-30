@@ -201,7 +201,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     /**
-     * Sends love(s) to the database to keep track of teecee love points ( No limit on the love <3 )
+     * Adds love(s) to the database to keep track of teecee love points ( No limit on the love <3 )
      */
         private void addNewLoves(int totalNewLoveCount){
             FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -213,11 +213,12 @@ public class MainActivity extends AppCompatActivity
                     Snackbar.LENGTH_LONG).show();
         }
 
-
+    /**
+     * Get current love(s) from our firebase database ( No limit on the love <3 )
+     */
         private void getTeeceeLoves(final int newLoves){
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             final DatabaseReference myRef = database.getReference("Loves");
-            final String[] hello = new String[2];
 
             // Read from the database
             myRef.addListenerForSingleValueEvent(new ValueEventListener() {
