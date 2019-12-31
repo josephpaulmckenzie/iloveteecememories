@@ -61,6 +61,12 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+    private void enablePersistence() {
+        // [START rtdb_enable_persistence]
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        // [END rtdb_enable_persistence]
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -219,6 +225,7 @@ public class MainActivity extends AppCompatActivity
         private void getTeeceeLoves(final int newLoves){
             final FirebaseDatabase database = FirebaseDatabase.getInstance();
             final DatabaseReference myRef = database.getReference("Loves");
+            myRef.keepSynced(true);
 
             // Read from the database
             myRef.addListenerForSingleValueEvent(new ValueEventListener() {

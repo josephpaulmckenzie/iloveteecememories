@@ -64,8 +64,6 @@ public class HomeFragment extends Fragment {
                                     .load(teeceeimage)
                                     .apply(new RequestOptions().fitCenter())
                                     .into(navBackground);
-
-
                         }
                     })
                     .addOnFailureListener(new OnFailureListener() {
@@ -83,11 +81,8 @@ public class HomeFragment extends Fragment {
                     .load(R.drawable.teeceee)
                     .apply(new RequestOptions().fitCenter())
                     .into(navBackground);
-
         }
-
         // Inflate the layout for this fragment
         return root;
     }
-
 }
