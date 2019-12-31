@@ -5,10 +5,10 @@
     tools:context="com.josephpaulmckenzie.iloveteeceememories.fragments.VideosFragment">
 
     <ImageView
-        android:layout_gravity="center"
         android:layout_width="50dp"
         android:layout_height="50dp"
-        android:src="@drawable/ic_menu_slideshow"
-        />
+        android:layout_gravity="center"
+        android:contentDescription="Video Fragment"
+        android:src="@drawable/ic_menu_slideshow" />
 
 </FrameLayout>

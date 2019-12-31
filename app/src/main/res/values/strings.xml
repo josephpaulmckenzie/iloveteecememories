@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Navigation Drawer Demo</string>
+    <string name="app_name">I Love Teecee Memories</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -9,4 +9,6 @@
     <string name="teecee_main_heading">I Love Teecee \n Memories</string>
     <string name="app_description"></string>
     <string name="an_app_for_teecee_n_memories">An app for Teecee   Memories</string>
+    <string name="profile_image">Profile Image</string>
+    <string name="background">Background</string>
 </resources>

@@ -49,7 +49,6 @@ public class MainActivity extends AppCompatActivity
         return connectionStatus;
     }
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -100,22 +99,12 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
-
         // Loading profile image
         ImageView profileImage = navHeader.findViewById(R.id.profileImage);
-        if (connectionStatus){
             Glide.with(this).load(NavigationDrawerConstants.PROFILE_URL)
-                    .apply(RequestOptions.circleCropTransform())
+                    .apply(RequestOptions.circleCropTransform().placeholder(R.drawable.teeceee))
                     .thumbnail(0.5f)
                     .into(profileImage);
-        } else {
-
-            Glide.with(this).load(R.drawable.teeceee)
-                    .apply(RequestOptions.circleCropTransform())
-                    .thumbnail(0.5f)
-                    .into(profileImage);
-        }
 
         //Loading background image
 
