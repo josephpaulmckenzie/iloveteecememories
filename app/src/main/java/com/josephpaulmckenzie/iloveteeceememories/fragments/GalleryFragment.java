@@ -46,9 +46,9 @@ public class GalleryFragment extends Fragment {
         final View root = inflater.inflate(R.layout.fragment_gallery, container, false);
         final ImageView navBackground = root.findViewById(R.id.image_gallery);
 
-        int internetStatus = ((MainActivity) getActivity()).connectionStatus();
+        Boolean internetStatus = ((MainActivity) getActivity()).connectionStatus();
 
-        if (internetStatus == 1) {
+        if (internetStatus) {
 
             // We have Internet so we can serve
             // Inflate the layout for this fragment

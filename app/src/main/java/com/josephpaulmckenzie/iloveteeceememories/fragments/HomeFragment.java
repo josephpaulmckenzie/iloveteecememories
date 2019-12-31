@@ -42,9 +42,9 @@ public class HomeFragment extends Fragment {
         final ImageView navBackground = root.findViewById(R.id.rotating_home_image);
         TextView textView = root.findViewById(R.id.teecee_main_heading);
         textView.setText("I Love Teecee Memories");
-        int internetStatus = ((MainActivity) getActivity()).connectionStatus();
+        Boolean internetStatus = ((MainActivity) getActivity()).connectionStatus();
 
-        if (internetStatus == 1) {
+        if (internetStatus) {
             // We have an active connection to the big ol cloud so we can serve images from somewhere out there.
             // Currently we are using Firebase because I already know AWS S3 storage and authentication (cognito/iam)
 

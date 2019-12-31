@@ -1,8 +1,6 @@
 package com.josephpaulmckenzie.iloveteeceememories;
 
 import android.content.Intent;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -10,6 +8,7 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
@@ -39,33 +38,17 @@ import com.josephpaulmckenzie.iloveteeceememories.fragments.VideosFragment;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 
-import java.util.Arrays;
-import java.util.Map;
-
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private View navHeader;
-    public int connectionStatus(){
-        ConnectivityManager manager = (ConnectivityManager) getSystemService(CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = manager.getActiveNetworkInfo();
+    public boolean connectionStatus;
 
-        // TODO update the way we check for network status currently using deprecated method
-        if (networkInfo != null && networkInfo.isConnectedOrConnecting()){
-//            Log.i("joe", String.valueOf(networkInfo.isConnectedOrConnecting()));
-            Log.i("Internet Status","Internet Connected");
-            return 1;
-        }else{
-            Log.i("Internet Status","Internet Not Connected");
-            return 0;
-        }
+
+    public Boolean connectionStatus(){
+        return connectionStatus;
     }
 
-    private void enablePersistence() {
-        // [START rtdb_enable_persistence]
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        // [END rtdb_enable_persistence]
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,16 +58,8 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.i("Teecee Love","1 Love sent");
-                // Currently lets just hardcode 1 for the new loves, however we may want to make this
-                // changeable.... maybe? Probably because i'll want to send a million at once sometimes
-                getTeeceeLoves(1);
-            }
-        });
-
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -95,9 +70,41 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navHeader = navigationView.getHeaderView(0);
 
+        connectedRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                boolean connected = snapshot.getValue(Boolean.class);
+                if (connected) {
+                    connectionStatus = true;
+                    Log.d("Internet is ", "Connected");
+                } else {
+                    Log.d("Internet is ", "Disconnected");
+                    connectionStatus = false;
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Log.w("Cancelled", "Listener was cancelled");
+            }
+        });
+
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Log.i("Teecee Love","1 Love sent");
+                // Currently lets just hardcode 1 for the new loves, however we may want to make this
+                // changeable.... maybe? Probably because i'll want to send a million at once sometimes
+                getTeeceeLoves(1);
+            }
+        });
+
+
+
         // Loading profile image
         ImageView profileImage = navHeader.findViewById(R.id.profileImage);
-        if (connectionStatus() == 1){
+        if (connectionStatus){
             Glide.with(this).load(NavigationDrawerConstants.PROFILE_URL)
                     .apply(RequestOptions.circleCropTransform())
                     .thumbnail(0.5f)
@@ -206,24 +213,15 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
-    /**
-     * Adds love(s) to the database to keep track of teecee love points ( No limit on the love <3 )
-     */
-        private void addNewLoves(int totalNewLoveCount){
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            DatabaseReference myRef = database.getReference("Loves");
-            Log.i("totalNewLoveCount", String.valueOf(totalNewLoveCount));
-            myRef.setValue(totalNewLoveCount);
-            ViewGroup view = findViewById(android.R.id.content);
-            Snackbar.make(view,"Current Teecee Loves: " + totalNewLoveCount,
-                    Snackbar.LENGTH_LONG).show();
-        }
+
+    // Gets our connection status for the database back from firebase
+    ;
 
     /**
      * Get current love(s) from our firebase database ( No limit on the love <3 )
      */
         private void getTeeceeLoves(final int newLoves){
-            final FirebaseDatabase database = FirebaseDatabase.getInstance();
+            FirebaseDatabase database = FirebaseDatabase.getInstance();
             final DatabaseReference myRef = database.getReference("Loves");
             myRef.keepSynced(true);
 
@@ -237,7 +235,7 @@ public class MainActivity extends AppCompatActivity
                     Long value = dataSnapshot.getValue(Long.class);
                     int currentLoves = Math.toIntExact(value);
                     int totalNewLoveCount = currentLoves + newLoves;
-                    addNewLoves(totalNewLoveCount);
+                        addNewLoves(totalNewLoveCount);
                 }
 
                 @Override
@@ -246,6 +244,18 @@ public class MainActivity extends AppCompatActivity
                     Log.w("Error", "Failed to read value.", error.toException());
                 }
             });
-
         }
+
+    /**
+     * Adds love(s) to the database to keep track of teecee love points ( No limit on the love <3 )
+     */
+    private void addNewLoves(int totalNewLoveCount){
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        DatabaseReference myRef = database.getReference("Loves");
+        Log.i("totalNewLoveCount", String.valueOf(totalNewLoveCount));
+        myRef.setValue(totalNewLoveCount);
+        ViewGroup view = findViewById(android.R.id.content);
+        Snackbar.make(view,"Current Teecee Loves: " + totalNewLoveCount,
+                Snackbar.LENGTH_LONG).show();
+    }
 }
