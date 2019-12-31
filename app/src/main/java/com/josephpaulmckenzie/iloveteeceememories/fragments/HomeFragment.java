@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.josephpaulmckenzie.iloveteeceememories.MainActivity;
 import com.josephpaulmckenzie.iloveteeceememories.R;
 import com.josephpaulmckenzie.iloveteeceememories.constants.NavigationDrawerConstants;
@@ -62,7 +63,10 @@ public class HomeFragment extends Fragment {
                             Log.i("RRRRRRR", teeceeimage);
                             Glide.with(root)
                                     .load(teeceeimage)
-                                    .apply(new RequestOptions().fitCenter())
+                                    .apply(new RequestOptions()
+                                            .fitCenter()
+                                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                    )
                                     .into(navBackground);
                         }
                     })
@@ -76,10 +80,14 @@ public class HomeFragment extends Fragment {
         } else {
 
             // We don't have access to that big ol cloud so we will show so images that we have locally in the app.
-            // Option to considering adding. In the case of no internet we can display a message 
+            // Option to considering adding. In the case of no internet we can display a message
             Glide.with(root)
                     .load(R.drawable.teeceee)
-                    .apply(new RequestOptions().fitCenter())
+                    .apply(new RequestOptions()
+                            .fitCenter()
+                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                    )
+
                     .into(navBackground);
         }
         // Inflate the layout for this fragment

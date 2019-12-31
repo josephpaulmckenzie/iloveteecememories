@@ -1,6 +1,8 @@
 package com.josephpaulmckenzie.iloveteeceememories;
 
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -57,8 +59,7 @@ public class MainActivity extends AppCompatActivity
         setSupportActionBar(toolbar);
 
         FloatingActionButton fab = findViewById(R.id.fab);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
@@ -69,6 +70,10 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navHeader = navigationView.getHeaderView(0);
 
+        // Firebase check for connection to database
+
+        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
         connectedRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -88,18 +93,20 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 Log.i("Teecee Love","1 Love sent");
-                // Currently lets just hardcode 1 for the new loves, however we may want to make this
-                // changeable.... maybe? Probably because i'll want to send a million at once sometimes
-                getTeeceeLoves(1);
+                // Was harcoded to one love per click, we now can set the number of LPC's in settings view
+                final SharedPreferences sharedPref = getSharedPreferences("loves", Context.MODE_PRIVATE);
+                // Will check and see if we have any LPC's set and use its value and if not will default to 1
+                final int currentLoveIntervals = sharedPref.getInt("loves", 1);
+                getTeeceeLoves(currentLoveIntervals);
             }
         });
 
         // Loading profile image
+        // Attempt to first load image from url and if no connection to cloud storage will get locally
         ImageView profileImage = navHeader.findViewById(R.id.profileImage);
             Glide.with(this).load(NavigationDrawerConstants.PROFILE_URL)
                     .apply(RequestOptions.circleCropTransform().placeholder(R.drawable.teeceee))
