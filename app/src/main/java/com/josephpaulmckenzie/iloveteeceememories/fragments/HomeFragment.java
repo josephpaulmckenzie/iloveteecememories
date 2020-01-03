@@ -75,6 +75,7 @@ public class HomeFragment extends Fragment {
                         String timeCreated = ds.child("timeCreated").getValue(String.class);
                         String timeUpdated = ds.child("timeUpdated").getValue(String.class);
                     }
+
                     Random randomGenerator = new Random();
                     int index = randomGenerator.nextInt(photoList.size());
                     String item = photoList.get(index);

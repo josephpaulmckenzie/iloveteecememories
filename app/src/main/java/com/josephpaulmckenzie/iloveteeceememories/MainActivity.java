@@ -6,6 +6,8 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+
+import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
@@ -108,15 +110,20 @@ public class MainActivity extends AppCompatActivity
         // Loading profile image
         // Attempt to first load image from url and if no connection to cloud storage will get locally
         ImageView profileImage = navHeader.findViewById(R.id.profileImage);
-            Glide.with(this).load(NavigationDrawerConstants.PROFILE_URL)
-                    .apply(RequestOptions.circleCropTransform().placeholder(R.drawable.teeceee))
-                    .thumbnail(0.5f)
-                    .into(profileImage);
+        Glide.with(this)
+                .load(NavigationDrawerConstants.PROFILE_URL)
+                .apply(new RequestOptions()
+                        .circleCropTransform()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                ).thumbnail(0.5f)
+                .into(profileImage);
 
         //Loading background image
 
         ImageView navBackground = navHeader.findViewById(R.id.img_header_bg);
         Glide.with(this).load(NavigationDrawerConstants.BACKGROUND_URL)
+                .apply(new RequestOptions()
+                        .diskCacheStrategy(DiskCacheStrategy.ALL))
                 .thumbnail(0.5f)
                 .into(navBackground);
 
@@ -163,7 +170,7 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        Fragment fragment = null;
+        Fragment fragment;
         if (id == R.id.nav_home) {
             fragment = new HomeFragment();
             displaySelectedFragment(fragment);
@@ -193,7 +200,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(urlIntent);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -208,10 +215,6 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.replace(R.id.frame, fragment);
         fragmentTransaction.commit();
     }
-
-
-    // Gets our connection status for the database back from firebase
-    ;
 
     /**
      * Get current love(s) from our firebase database ( No limit on the love <3 )
