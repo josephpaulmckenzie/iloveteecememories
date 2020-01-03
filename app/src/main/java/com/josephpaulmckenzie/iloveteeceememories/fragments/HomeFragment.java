@@ -1,5 +1,6 @@
 package com.josephpaulmckenzie.iloveteeceememories.fragments;
 
+import android.content.ClipData;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,6 +14,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.josephpaulmckenzie.iloveteeceememories.MainActivity;
 import com.josephpaulmckenzie.iloveteeceememories.R;
 import com.josephpaulmckenzie.iloveteeceememories.constants.NavigationDrawerConstants;
@@ -24,11 +30,13 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.ListResult;
 import com.google.firebase.storage.StorageReference;
 
+import java.sql.Array;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
 public class HomeFragment extends Fragment {
-
+    final ArrayList<String> photoList = new ArrayList<>();
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,34 +57,40 @@ public class HomeFragment extends Fragment {
             // We have an active connection to the big ol cloud so we can serve images from somewhere out there.
             // Currently we are using Firebase because I already know AWS S3 storage and authentication (cognito/iam)
 
-            FirebaseStorage storage = FirebaseStorage.getInstance("gs://joes-react-native-app.appspot.com");
-            StorageReference listRef = storage.getReference().child("photos");
-            listRef.listAll()
-                    .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                        @Override
-                        public void onSuccess(ListResult listResult) {
-                            List<StorageReference> teeceelinks = listResult.getItems();
-                            Random rand = new Random();
-                            String firstpart = "https://firebasestorage.googleapis.com/v0/b/joes-react-native-app.appspot.com/o/photos%2F";
-                            String second = String.valueOf(teeceelinks.get(rand.nextInt(teeceelinks.size()))).split("/")[4];
-                            String teeceeimage = firstpart + second + "?alt=media";
-                            Log.i("RRRRRRR", teeceeimage);
-                            Glide.with(root)
-                                    .load(teeceeimage)
-                                    .apply(new RequestOptions()
-                                            .fitCenter()
-                                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                    )
-                                    .into(navBackground);
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // Uh-oh, an error occurred!
-                            Log.i("Error", String.valueOf(e));
-                        }
-                    });
+            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+            DatabaseReference photosRef = rootRef.child("photos");
+            ValueEventListener eventListener = new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                        String bucket = ds.child("bucket").getValue(String.class);
+                        String contentType = ds.child("contentType").getValue(String.class);
+                        String id = ds.child("id").getValue(String.class);
+                        String md5Hash = ds.child("md5Hash").getValue(String.class);
+                        String mediaLink = ds.child("mediaLink").getValue(String.class);
+                        photoList.add(mediaLink);
+                        String name = ds.child("name").getValue(String.class);
+                        String size = ds.child("size").getValue(String.class);
+                        String timeCreated = ds.child("timeCreated").getValue(String.class);
+                        String timeUpdated = ds.child("timeUpdated").getValue(String.class);
+                    }
+                    Random randomGenerator = new Random();
+                    int index = randomGenerator.nextInt(photoList.size());
+                    String item = photoList.get(index);
+
+                    Glide.with(root)
+                        .load(item)
+                        .apply(new RequestOptions()
+                                .fitCenter()
+                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        )
+                        .into(navBackground);
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {}
+            };
+            photosRef.addListenerForSingleValueEvent(eventListener);
         } else {
 
             // We don't have access to that big ol cloud so we will show so images that we have locally in the app.
