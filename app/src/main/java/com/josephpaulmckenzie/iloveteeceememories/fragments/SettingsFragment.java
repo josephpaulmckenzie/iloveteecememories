@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -22,6 +23,9 @@ import com.josephpaulmckenzie.iloveteeceememories.constants.NavigationDrawerCons
 
 import org.w3c.dom.Text;
 
+import static android.content.Context.INPUT_METHOD_SERVICE;
+import static androidx.core.content.ContextCompat.getSystemService;
+import android.view.inputmethod.InputMethodManager;
 
 public class SettingsFragment extends Fragment {
     @Override
@@ -50,7 +54,10 @@ public class SettingsFragment extends Fragment {
         final TextView textView = root.findViewById(R.id.loves);
         textView.setHint("Current Loves per clicks: " + currentLoveIntervals);
         final View mButton = root.findViewById(R.id.submit_github);
+//================ Hide Virtual Key Board When  Clicking==================//
 
+
+//======== Hide Virtual Keyboard =====================//
 // Not going to use yet
 //
 //        textView.addTextChangedListener(new TextWatcher() {
@@ -84,7 +91,15 @@ public class SettingsFragment extends Fragment {
                         editor.putInt("loves", Integer.parseInt(input));
                         editor.apply();
                         editor.commit();
-
+                        // Collapses the virtual keyboard after hitting submit button
+                        // If you click done on the keyboard it will collapse then you can click submit
+                        // However if you click the button without hitting done the keyboard stays up
+                        try  {
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+                        } catch (Exception e) {
+                            Log.i("Error","When closing keyboard ");
+                        }
                         textView.setText("");
                         int currentLoveIntervals = sharedPref.getInt("loves", 100);
                         textView.setHint("Current Loves per clicks: " + currentLoveIntervals);
@@ -95,5 +110,7 @@ public class SettingsFragment extends Fragment {
         // Inflate the layout for this fragment
         return root;
     }
+
+
 
 }
