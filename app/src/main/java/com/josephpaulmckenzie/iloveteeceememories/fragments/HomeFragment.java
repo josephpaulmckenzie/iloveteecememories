@@ -51,9 +51,10 @@ public class HomeFragment extends Fragment {
         final ImageView navBackground = root.findViewById(R.id.rotating_home_image);
         TextView textView = root.findViewById(R.id.teecee_main_heading);
         textView.setText("I Love Teecee Memories");
-        Boolean internetStatus = ((MainActivity) getActivity()).connectionStatus();
+        // No longer needed as we control our offline capabilities using firebase and glide's image caching
+//        Boolean internetStatus = ((MainActivity) getActivity()).connectionStatus();
 
-        if (internetStatus) {
+//        if (internetStatus) {
             // We have an active connection to the big ol cloud so we can serve images from somewhere out there.
             // Currently we are using Firebase because I already know AWS S3 storage and authentication (cognito/iam)
 
@@ -77,7 +78,7 @@ public class HomeFragment extends Fragment {
                     Random randomGenerator = new Random();
                     int index = randomGenerator.nextInt(photoList.size());
                     String item = photoList.get(index);
-
+                    Log.i("Loading image",item);
                     Glide.with(root)
                         .load(item)
                         .apply(new RequestOptions()
@@ -91,20 +92,6 @@ public class HomeFragment extends Fragment {
                 public void onCancelled(DatabaseError databaseError) {}
             };
             photosRef.addListenerForSingleValueEvent(eventListener);
-        } else {
-
-            // We don't have access to that big ol cloud so we will show so images that we have locally in the app.
-            // Option to considering adding. In the case of no internet we can display a message
-            Glide.with(root)
-                    .load(R.drawable.teeceee)
-                    .apply(new RequestOptions()
-                            .fitCenter()
-                            .diskCacheStrategy(DiskCacheStrategy.ALL)
-                    )
-
-                    .into(navBackground);
-        }
-        // Inflate the layout for this fragment
         return root;
     }
 }
