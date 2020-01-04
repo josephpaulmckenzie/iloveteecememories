@@ -172,6 +172,9 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
         Fragment fragment = null;
+        final SharedPreferences sharedPref = this.getSharedPreferences("accessCodes", Context.MODE_PRIVATE);
+        Log.i("@@@@@@@",sharedPref.getString("accessCode", ""));
+
         if (id == R.id.nav_home) {
             fragment = new HomeFragment();
             displaySelectedFragment(fragment);
@@ -187,7 +190,24 @@ public class MainActivity extends AppCompatActivity
             fragment = new SettingsFragment();
             displaySelectedFragment(fragment);
 
-        } else if (id == R.id.nav_share) {
+
+        }else if (id == R.id.nav_chat) {
+            if (sharedPref.getString("accessCode", "").equals("Teecee2020")){
+                Log.i("AccessCode","Valid");
+                fragment = new SettingsFragment();
+                displaySelectedFragment(fragment);
+            } else {
+                Log.i("AccessCode","Invalid");
+                ViewGroup view = findViewById(android.R.id.content);
+
+                Snackbar mySnackbar = Snackbar.make(view, "Restricted Access", Snackbar.LENGTH_LONG);
+                mySnackbar.show();
+                mySnackbar.setAction("Request Code", new MyUndoListener());
+
+            }
+
+        }
+        else if (id == R.id.nav_share) {
             //Display Share Via dialogue
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType(NavigationDrawerConstants.SHARE_TEXT_TYPE);
@@ -262,4 +282,15 @@ public class MainActivity extends AppCompatActivity
         Snackbar.make(view,"Current Teecee Loves: " + totalNewLoveCount,
                 Snackbar.LENGTH_LONG).show();
     }
+
+    public class MyUndoListener implements View.OnClickListener {
+
+        @Override
+        public void onClick(View v) {
+
+            Log.i("Access Code", "Access code requested");
+        }
+    }
+
 }
+

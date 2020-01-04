@@ -54,29 +54,29 @@ public class GalleryFragment extends Fragment {
             // Inflate the layout for this fragment
             FirebaseStorage storage = FirebaseStorage.getInstance("gs://joes-react-native-app.appspot.com");
             StorageReference listRef = storage.getReference().child("photos");
-            listRef.listAll()
-                    .addOnSuccessListener(new OnSuccessListener<ListResult>() {
-                        @Override
-                        public void onSuccess(ListResult listResult) {
-                            List<StorageReference> teeceelinks = listResult.getItems();
-                            Random rand = new Random();
-                            String firstpart = "https://firebasestorage.googleapis.com/v0/b/joes-react-native-app.appspot.com/o/photos%2F";
-                            String second = String.valueOf(teeceelinks.get(rand.nextInt(teeceelinks.size()))).split("/")[4];
-                            String teeceeimage = firstpart + second + "?alt=media";
-                            Log.i("RRRRRRR", teeceeimage);
-                            Glide.with(root).load(teeceeimage)
-                                    .thumbnail(0.5f)
-                                    .into(navBackground);
-
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            // Uh-oh, an error occurred!
-                            Log.i("Error", String.valueOf(e));
-                        }
-                    });
+//            listRef.listAll()
+//                    .addOnSuccessListener(new OnSuccessListener<ListResult>() {
+//                        @Override
+//                        public void onSuccess(ListResult listResult) {
+//                            List<StorageReference> teeceelinks = listResult.getItems();
+//                            Random rand = new Random();
+//                            String firstpart = "https://firebasestorage.googleapis.com/v0/b/joes-react-native-app.appspot.com/o/photos%2F";
+//                            String second = String.valueOf(teeceelinks.get(rand.nextInt(teeceelinks.size()))).split("/")[4];
+//                            String teeceeimage = firstpart + second + "?alt=media";
+//                            Log.i("RRRRRRR", teeceeimage);
+//                            Glide.with(root).load(teeceeimage)
+//                                    .thumbnail(0.5f)
+//                                    .into(navBackground);
+//
+//                        }
+//                    })
+//                    .addOnFailureListener(new OnFailureListener() {
+//                        @Override
+//                        public void onFailure(@NonNull Exception e) {
+//                            // Uh-oh, an error occurred!
+//                            Log.i("Error", String.valueOf(e));
+//                        }
+//                    });
         } else {
             Glide.with(root)
                     .load(R.drawable.teeceee)

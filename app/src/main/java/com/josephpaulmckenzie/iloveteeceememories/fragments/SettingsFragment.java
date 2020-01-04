@@ -52,12 +52,11 @@ public class SettingsFragment extends Fragment {
         final int currentLoveIntervals = sharedPref.getInt("loves", 100);
 
         final TextView textView = root.findViewById(R.id.loves);
+        final TextView accessCode = root.findViewById(R.id.accessCode);
         textView.setHint("Current Loves per clicks: " + currentLoveIntervals);
+
         final View mButton = root.findViewById(R.id.submit_github);
-//================ Hide Virtual Key Board When  Clicking==================//
-
-
-//======== Hide Virtual Keyboard =====================//
+        final View accessCodeButton = root.findViewById(R.id.submit_code);
 // Not going to use yet
 //
 //        textView.addTextChangedListener(new TextWatcher() {
@@ -91,6 +90,8 @@ public class SettingsFragment extends Fragment {
                         editor.putInt("loves", Integer.parseInt(input));
                         editor.apply();
                         editor.commit();
+
+                        //================ Hide Virtual Key Board When  Clicking==================//
                         // Collapses the virtual keyboard after hitting submit button
                         // If you click done on the keyboard it will collapse then you can click submit
                         // However if you click the button without hitting done the keyboard stays up
@@ -100,6 +101,8 @@ public class SettingsFragment extends Fragment {
                         } catch (Exception e) {
                             Log.i("Error","When closing keyboard ");
                         }
+                        //======== Hide Virtual Keyboard =====================//
+
                         textView.setText("");
                         int currentLoveIntervals = sharedPref.getInt("loves", 100);
                         textView.setHint("Current Loves per clicks: " + currentLoveIntervals);
@@ -107,10 +110,37 @@ public class SettingsFragment extends Fragment {
                 });
 
 
+
+        accessCodeButton.setOnClickListener(
+                new View.OnClickListener() {
+                    public void onClick(View view) {
+
+                        SharedPreferences pref = getActivity().getSharedPreferences("accessCodes", Context.MODE_PRIVATE);
+                        SharedPreferences.Editor editor = pref.edit();
+
+                        String  input = accessCode.getText().toString();
+                        editor.putString("accessCode", input);
+                        editor.apply();
+                        editor.commit();
+
+                        //================ Hide Virtual Key Board When  Clicking==================//
+                        // Collapses the virtual keyboard after hitting submit button
+                        // If you click done on the keyboard it will collapse then you can click submit
+                        // However if you click the button without hitting done the keyboard stays up
+                        try  {
+                            InputMethodManager imm = (InputMethodManager) getActivity().getSystemService(INPUT_METHOD_SERVICE);
+                            imm.hideSoftInputFromWindow(getActivity().getCurrentFocus().getWindowToken(), 0);
+                        } catch (Exception e) {
+                            Log.i("Error","When closing keyboard ");
+                        }
+                        //======== Hide Virtual Keyboard =====================//
+
+                        accessCode.setText("");
+                        String currentAccessCode = sharedPref.getString("accessCode", "");
+                        accessCode.setHint("Enter access code ");
+                    }
+                });
         // Inflate the layout for this fragment
         return root;
     }
-
-
-
 }
