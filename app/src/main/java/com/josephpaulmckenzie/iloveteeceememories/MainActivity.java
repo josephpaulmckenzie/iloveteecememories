@@ -169,7 +169,7 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.action_logout) {
             AuthUI.getInstance()
                     .signOut(this)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
@@ -196,6 +196,7 @@ public class MainActivity extends AppCompatActivity
                                         AuthUI.getInstance()
                                                 .createSignInIntentBuilder()
                                                 .setAvailableProviders(providers)
+                                                .setLogo(R.drawable.newfiebig)
                                                 .build(),
                                         554
                                 );

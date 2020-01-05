@@ -36,6 +36,7 @@
 
     <string name="contact_posted">Your message has been successfully delivered.</string>
     <string name="sign_in">Sign In</string>
+    <string name="logout">Log out</string>
 
 
 </resources>

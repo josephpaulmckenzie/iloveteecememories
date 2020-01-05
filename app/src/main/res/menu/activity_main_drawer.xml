@@ -17,18 +17,17 @@
             android:icon="@drawable/ic_menu_slideshow"
             android:title="Videos" />
         <item
-        android:id="@+id/nav_settings"
-        android:icon="@drawable/ic_menu_manage"
-        android:title="Settings" />
-
+            android:id="@+id/upload_file"
+            android:icon="@drawable/ic_upload"
+            android:title="Upload" />
         <item
             android:id="@+id/nav_chat"
-            android:icon="@drawable/ic_menu_manage"
+            android:icon="@drawable/ic_dog"
             android:title="Chat" />
         <item
-            android:id="@+id/upload_file"
+            android:id="@+id/nav_settings"
             android:icon="@drawable/ic_menu_manage"
-            android:title="Upload" />
+            android:title="Settings" />
     </group>
 
     <item android:title="Others">
