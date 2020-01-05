@@ -1,6 +1,7 @@
 package com.josephpaulmckenzie.iloveteeceememories;
 
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -14,6 +15,7 @@ import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.view.GravityCompat;
@@ -23,11 +25,17 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -49,7 +57,7 @@ public class MainActivity extends AppCompatActivity
     public boolean connectionStatus;
 
 
-    public Boolean connectionStatus(){
+    public Boolean connectionStatus() {
         return connectionStatus;
     }
 
@@ -59,7 +67,6 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
         FloatingActionButton fab = findViewById(R.id.fab);
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
@@ -98,7 +105,7 @@ public class MainActivity extends AppCompatActivity
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Log.i("Teecee Love","1 Love sent");
+                Log.i("Teecee Love", "1 Love sent");
                 // Was harcoded to one love per click, we now can set the number of LPC's in settings view
                 final SharedPreferences sharedPref = getSharedPreferences("loves", Context.MODE_PRIVATE);
                 // Will check and see if we have any LPC's set and use its value and if not will default to 1
@@ -171,9 +178,9 @@ public class MainActivity extends AppCompatActivity
     public boolean onNavigationItemSelected(MenuItem item) {
         // Handle navigation view item clicks here.
         int id = item.getItemId();
-        Fragment fragment = null;
+        Fragment fragment;
         final SharedPreferences sharedPref = this.getSharedPreferences("accessCodes", Context.MODE_PRIVATE);
-        Log.i("@@@@@@@",sharedPref.getString("accessCode", ""));
+        Log.i("@@@@@@@", sharedPref.getString("accessCode", ""));
 
         if (id == R.id.nav_home) {
             fragment = new HomeFragment();
@@ -191,23 +198,21 @@ public class MainActivity extends AppCompatActivity
             displaySelectedFragment(fragment);
 
 
-        }else if (id == R.id.nav_chat) {
-            if (sharedPref.getString("accessCode", "").equals("Teecee2020")){
-                Log.i("AccessCode","Valid");
+        } else if (id == R.id.nav_chat) {
+            if (sharedPref.getString("accessCode", "").equals("Teecee2020")) {
+                Log.i("AccessCode", "Valid");
                 fragment = new SettingsFragment();
                 displaySelectedFragment(fragment);
             } else {
-                Log.i("AccessCode","Invalid");
+                Log.i("AccessCode", "Invalid");
                 ViewGroup view = findViewById(android.R.id.content);
-
                 Snackbar mySnackbar = Snackbar.make(view, "Restricted Access", Snackbar.LENGTH_LONG);
                 mySnackbar.show();
-                mySnackbar.setAction("Request Code", new MyUndoListener());
+                mySnackbar.setAction("Enter or Request a code", new AccessCodeListener());
 
             }
 
-        }
-        else if (id == R.id.nav_share) {
+        } else if (id == R.id.nav_share) {
             //Display Share Via dialogue
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
             sharingIntent.setType(NavigationDrawerConstants.SHARE_TEXT_TYPE);
@@ -221,7 +226,7 @@ public class MainActivity extends AppCompatActivity
             startActivity(urlIntent);
         }
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
@@ -244,53 +249,54 @@ public class MainActivity extends AppCompatActivity
     /**
      * Get current love(s) from our firebase database ( No limit on the love <3 )
      */
-        private void getTeeceeLoves(final int newLoves){
-            FirebaseDatabase database = FirebaseDatabase.getInstance();
-            final DatabaseReference myRef = database.getReference("Loves");
-            myRef.keepSynced(true);
+    private void getTeeceeLoves(final int newLoves) {
+        FirebaseDatabase database = FirebaseDatabase.getInstance();
+        final DatabaseReference myRef = database.getReference("Loves");
+        myRef.keepSynced(true);
 
-            // Read from the database
-            myRef.addListenerForSingleValueEvent(new ValueEventListener() {
-                @RequiresApi(api = Build.VERSION_CODES.N)
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    // This method is called once with the initial value and again
-                    // whenever data at this location is updated.
-                    Long value = dataSnapshot.getValue(Long.class);
-                    int currentLoves = Math.toIntExact(value);
-                    int totalNewLoveCount = currentLoves + newLoves;
-                        addNewLoves(totalNewLoveCount);
-                }
+        // Read from the database
+        myRef.addListenerForSingleValueEvent(new ValueEventListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                // This method is called once with the initial value and again
+                // whenever data at this location is updated.
+                Long value = dataSnapshot.getValue(Long.class);
+                int currentLoves = Math.toIntExact(value);
+                int totalNewLoveCount = currentLoves + newLoves;
+                addNewLoves(totalNewLoveCount);
+            }
 
-                @Override
-                public void onCancelled(DatabaseError error) {
-                    // Failed to read value
-                    Log.w("Error", "Failed to read value.", error.toException());
-                }
-            });
-        }
+            @Override
+            public void onCancelled(DatabaseError error) {
+                // Failed to read value
+                Log.w("Error", "Failed to read value.", error.toException());
+            }
+        });
+    }
 
     /**
      * Adds love(s) to the database to keep track of teecee love points ( No limit on the love <3 )
      */
-    private void addNewLoves(int totalNewLoveCount){
+    private void addNewLoves(int totalNewLoveCount) {
         FirebaseDatabase database = FirebaseDatabase.getInstance();
         DatabaseReference myRef = database.getReference("Loves");
         Log.i("totalNewLoveCount", String.valueOf(totalNewLoveCount));
         myRef.setValue(totalNewLoveCount);
         ViewGroup view = findViewById(android.R.id.content);
-        Snackbar.make(view,"Current Teecee Loves: " + totalNewLoveCount,
+        Snackbar.make(view, "Current Teecee Loves: " + totalNewLoveCount,
                 Snackbar.LENGTH_LONG).show();
     }
 
-    public class MyUndoListener implements View.OnClickListener {
 
+    public class AccessCodeListener implements View.OnClickListener {
         @Override
         public void onClick(View v) {
-
+            Fragment fragment = null;
+            fragment = new SettingsFragment();
+            displaySelectedFragment(fragment);
             Log.i("Access Code", "Access code requested");
         }
     }
-
 }
 

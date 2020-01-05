@@ -4,6 +4,7 @@
     android:id="@+id/frameLayout2"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     tools:context="com.josephpaulmckenzie.iloveteeceememories.fragments.SettingsFragment">
 
     <EditText
@@ -45,31 +46,45 @@
         android:layout_height="40dp"
         android:layout_marginStart="56dp"
         android:layout_marginLeft="56dp"
-        android:layout_marginTop="364dp"
+        android:layout_marginTop="155dp"
         android:layout_marginEnd="57dp"
         android:layout_marginRight="57dp"
         android:ems="10"
         android:hint="Enter a access code"
         android:imeOptions="actionDone"
         android:inputType="text"
-        app:layout_constraintBottom_toTopOf="@+id/submit_code"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toBottomOf="@+id/submit_github" />
 
     <Button
         android:id="@+id/submit_code"
         android:layout_width="wrap_content"
         android:layout_height="48dp"
-        android:layout_marginStart="66dp"
-        android:layout_marginLeft="66dp"
-        android:layout_marginEnd="65dp"
-        android:layout_marginRight="65dp"
-        android:layout_marginBottom="278dp"
+        android:layout_marginStart="162dp"
+        android:layout_marginLeft="162dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="162dp"
+        android:layout_marginRight="162dp"
+        android:layout_marginBottom="259dp"
         android:text="Submit"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.515"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/requestCode" />
+
+    <TextView
+        android:id="@+id/requestCode"
+        android:layout_width="149dp"
+        android:layout_height="34dp"
+        android:layout_marginStart="60dp"
+        android:layout_marginLeft="60dp"
+        android:background="@null"
+        android:clickable="true"
+        android:ems="10"
+        android:text="Request a code"
+        android:textColor="#F3DB1414"
+        android:textSize="14sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/accessCode" />
 
