@@ -25,6 +25,10 @@
             android:id="@+id/nav_chat"
             android:icon="@drawable/ic_menu_manage"
             android:title="Chat" />
+        <item
+            android:id="@+id/upload_file"
+            android:icon="@drawable/ic_menu_manage"
+            android:title="Upload" />
     </group>
 
     <item android:title="Others">

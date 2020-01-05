@@ -1,7 +1,6 @@
 package com.josephpaulmckenzie.iloveteeceememories;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
@@ -9,13 +8,15 @@ import android.os.Build;
 import android.os.Bundle;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.firebase.ui.auth.AuthUI;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.android.material.navigation.NavigationView;
 import com.google.android.material.snackbar.Snackbar;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.core.view.GravityCompat;
@@ -25,18 +26,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -47,9 +45,13 @@ import com.josephpaulmckenzie.iloveteeceememories.fragments.ChatRoomFragment;
 import com.josephpaulmckenzie.iloveteeceememories.fragments.GalleryFragment;
 import com.josephpaulmckenzie.iloveteeceememories.fragments.HomeFragment;
 import com.josephpaulmckenzie.iloveteeceememories.fragments.SettingsFragment;
+import com.josephpaulmckenzie.iloveteeceememories.fragments.UploadFileFragment;
 import com.josephpaulmckenzie.iloveteeceememories.fragments.VideosFragment;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+
+import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity
         navHeader = navigationView.getHeaderView(0);
 
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-    // Firebase check for connection to database
+        // Firebase check for connection to database
 //        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
 //
 //        connectedRef.addValueEventListener(new ValueEventListener() {
@@ -168,7 +170,38 @@ public class MainActivity extends AppCompatActivity
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            return true;
+            AuthUI.getInstance()
+                    .signOut(this)
+                    .addOnCompleteListener(new OnCompleteListener<Void>() {
+                        public void onComplete(@NonNull Task<Void> task) {
+                            Log.i("LOGOUT", "Logging out");
+                            Toast.makeText(getApplicationContext(),
+                                    "Successfully logged out",
+                                    Toast.LENGTH_LONG)
+                                    .show();
+                            // Start sign in/sign up activity
+                            FirebaseUser username = FirebaseAuth.getInstance().getCurrentUser();
+//        String displayName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+                            List<AuthUI.IdpConfig> providers = Arrays.asList(
+                                    new AuthUI.IdpConfig.EmailBuilder().build(),
+                                    new AuthUI.IdpConfig.PhoneBuilder().build(),
+                                    new AuthUI.IdpConfig.GoogleBuilder().build());
+//                new AuthUI.IdpConfig.FacebookBuilder().build(),
+//                new AuthUI.IdpConfig.TwitterBuilder().build());
+
+
+                            if (username == null) {
+                                // Start sign in/sign up activity
+                                startActivityForResult(
+                                        AuthUI.getInstance()
+                                                .createSignInIntentBuilder()
+                                                .setAvailableProviders(providers)
+                                                .build(),
+                                        554
+                                );
+                            }
+                        }
+                    });
         }
 
         return super.onOptionsItemSelected(item);
@@ -213,6 +246,17 @@ public class MainActivity extends AppCompatActivity
 
             }
 
+        } else if (id == R.id.upload_file) {
+
+            fragment = new UploadFileFragment();
+            displaySelectedFragment(fragment);
+
+
+        } else if (id == R.id.nav_visit_us) {
+            //Open URL on click of Visit Us
+            Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NavigationDrawerConstants.SITE_URL));
+            startActivity(urlIntent);
+
         } else if (id == R.id.nav_share) {
             //Display Share Via dialogue
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -221,12 +265,7 @@ public class MainActivity extends AppCompatActivity
             sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, NavigationDrawerConstants.SHARE_MESSAGE);
             startActivity(Intent.createChooser(sharingIntent, NavigationDrawerConstants.SHARE_VIA));
 
-        } else if (id == R.id.nav_visit_us) {
-            //Open URL on click of Visit Us
-            Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NavigationDrawerConstants.SITE_URL));
-            startActivity(urlIntent);
         }
-
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
