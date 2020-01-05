@@ -1,7 +1,7 @@
 package com.josephpaulmckenzie.iloveteeceememories.constants;
 
 public class NavigationDrawerConstants {
-    public final static String PROFILE_URL = "https://firebasestorage.googleapis.com/v0/b/joes-react-native-app.appspot.com/o/photos%2F79366973_865795383874102_5686717968998727680_n.jpg?alt=media&token=be06c53a-7706-4a03-b23f-c0fa864ff1ea";
+    public final static String PROFILE_URL = "https://firebasestorage.googleapis.com/v0/b/joes-react-native-app.appspot.com/o/teeceePhotos%2Fteecee.jpg?alt=media";
     public final static String BACKGROUND_URL = "http://www.androiddeft.com/wp-content/uploads/2017/11/nav_bg.jpg";
     public final static String TAG_HOME = "Home";
     public final static String TAG_GALLERY = "Gallery";

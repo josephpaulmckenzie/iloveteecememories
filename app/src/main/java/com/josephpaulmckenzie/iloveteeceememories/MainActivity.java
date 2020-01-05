@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity
                     .signOut(this)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         public void onComplete(@NonNull Task<Void> task) {
-                            Log.i("LOGOUT", "Logging out");
+                            Log.i("LOGOUT", "Log out button clicked");
                             Toast.makeText(getApplicationContext(),
                                     "Successfully logged out",
                                     Toast.LENGTH_LONG)
