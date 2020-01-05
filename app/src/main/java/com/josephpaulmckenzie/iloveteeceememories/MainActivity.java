@@ -43,6 +43,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.josephpaulmckenzie.iloveteeceememories.constants.NavigationDrawerConstants;
+import com.josephpaulmckenzie.iloveteeceememories.fragments.ChatRoomFragment;
 import com.josephpaulmckenzie.iloveteeceememories.fragments.GalleryFragment;
 import com.josephpaulmckenzie.iloveteeceememories.fragments.HomeFragment;
 import com.josephpaulmckenzie.iloveteeceememories.fragments.SettingsFragment;
@@ -79,28 +80,28 @@ public class MainActivity extends AppCompatActivity
         navigationView.setNavigationItemSelectedListener(this);
         navHeader = navigationView.getHeaderView(0);
 
-        // Firebase check for connection to database
-
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-        connectedRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                boolean connected = snapshot.getValue(Boolean.class);
-                if (connected) {
-                    connectionStatus = true;
-                    Log.d("Internet is ", "Connected");
-                } else {
-                    Log.d("Internet is ", "Disconnected");
-                    connectionStatus = false;
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-                Log.w("Cancelled", "Listener was cancelled");
-            }
-        });
+    // Firebase check for connection to database
+//        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
+//
+//        connectedRef.addValueEventListener(new ValueEventListener() {
+//            @Override
+//            public void onDataChange(@NonNull DataSnapshot snapshot) {
+//                boolean connected = snapshot.getValue(Boolean.class);
+//                if (connected) {
+//                    connectionStatus = true;
+//                    Log.d("Internet is ", "Connected");
+//                } else {
+//                    Log.d("Internet is ", "Disconnected");
+//                    connectionStatus = false;
+//                }
+//            }
+//
+//            @Override
+//            public void onCancelled(@NonNull DatabaseError error) {
+//                Log.w("Cancelled", "Listener was cancelled");
+//            }
+//        });
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -201,7 +202,7 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_chat) {
             if (sharedPref.getString("accessCode", "").equals("Teecee2020")) {
                 Log.i("AccessCode", "Valid");
-                fragment = new SettingsFragment();
+                fragment = new ChatRoomFragment();
                 displaySelectedFragment(fragment);
             } else {
                 Log.i("AccessCode", "Invalid");
