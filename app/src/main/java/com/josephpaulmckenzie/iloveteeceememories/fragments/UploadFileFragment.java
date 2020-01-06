@@ -62,7 +62,7 @@ public class UploadFileFragment extends Fragment {
     private String mUsername;
     private static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
     private DatabaseReference mFirebaseDatabaseReference;
-    public static final String MESSAGES_CHILD = "messages";
+    public static final String MESSAGES_CHILD = "photos";
     public static final String ANONYMOUS = "anonymous";
     public static String fileName = null;
     @Override
@@ -175,10 +175,10 @@ public class UploadFileFragment extends Fragment {
                                                 public void onClick(View view) {
                                                     putImageInStorage(storageReference, uri, key);
                                                     Toast.makeText(getActivity(),
-                                                            "Uploaded " + fileName +  " to Firebase",
+                                                            "Uploading " + fileName +  " to Firebase, Please wait",
                                                             Toast.LENGTH_LONG)
                                                             .show();
-                                                    imageView2.setImageResource(R.drawable.ic_newfoundland_head);
+//                                                    imageView2.setImageResource(R.drawable.ic_newfoundland_head);
 
                                                 }
                                             });
@@ -218,6 +218,15 @@ public class UploadFileFragment extends Fragment {
                                                         mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(key)
                                                                 .setValue(friendlyMessage);
                                                     }
+                                                    Toast.makeText(getActivity(),
+                                                            "Uploaded " + fileName +  " to Firebase",
+                                                            Toast.LENGTH_LONG)
+                                                            .show();
+                                                    final ImageView imageView2 = getActivity().findViewById(R.id.imageView2);
+                                                    imageView2.setImageResource(R.drawable.ic_newfoundland_head);
+
+
+
                                                 }
                                             });
                         } else {

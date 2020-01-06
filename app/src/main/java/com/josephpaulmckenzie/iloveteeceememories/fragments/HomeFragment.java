@@ -60,49 +60,46 @@ public class HomeFragment extends Fragment {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                    String bucket = ds.child("bucket").getValue(String.class);
-                    String contentType = ds.child("contentType").getValue(String.class);
-                    String id = ds.child("id").getValue(String.class);
-                    String md5Hash = ds.child("md5Hash").getValue(String.class);
-                    String mediaLink = ds.child("mediaLink").getValue(String.class);
-                    photoList.add(mediaLink);
-                    String name = ds.child("name").getValue(String.class);
-                    String size = ds.child("size").getValue(String.class);
-                    String timeCreated = ds.child("timeCreated").getValue(String.class);
-                    String timeUpdated = ds.child("timeUpdated").getValue(String.class);
+//                    String bucket = ds.child("bucket").getValue(String.class);
+//                    String contentType = ds.child("contentType").getValue(String.class);
+//                    String id = ds.child("id").getValue(String.class);
+//                    String md5Hash = ds.child("md5Hash").getValue(String.class);
+                    String mediaLink = ds.child("imageUrl").getValue(String.class);
+                    if (mediaLink != "https://www.google.com/images/spin-32.gif"){
+                        photoList.add(mediaLink);
+                    }
+
+//                    String name = ds.child("name").getValue(String.class);
+//                    String size = ds.child("size").getValue(String.class);
+//                    String timeCreated = ds.child("timeCreated").getValue(String.class);
+//                    String timeUpdated = ds.child("timeUpdated").getValue(String.class);
                 }
-                Random randomGenerator = new Random();
-                int index = randomGenerator.nextInt(photoList.size());
-                String item = photoList.get(index);
-                Glide.with(root)
-                        .load(item)
-                        .apply(new RequestOptions()
-                                .fitCenter()
-                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
-                                        .skipMemoryCache(true)
-//                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        )
-                        .into(navBackground);
-//                    Timer timer = new Timer();
-//                    timer.schedule(new TimerTask() {
-//                        @Override
-//                        public void run() {
-//                            getActivity().runOnUiThread(new Runnable() {
-//                                @Override
-//                                public void run() {
-//
-//                                    Log.i("Loading image",item);
-//                                    Glide.with(root)
-//                                            .load(item)
-//                                            .apply(new RequestOptions()
-//                                                    .fitCenter()
-//                                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-//                                            )
-//                                            .into(navBackground);
-//                                }
-//                            });
-//                        }
-//                    }, 0, 10000); // End of your timer code.
+
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
+                        @Override
+                        public void run() {
+                            if (getActivity() != null) {
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Random randomGenerator = new Random();
+                                        int index = randomGenerator.nextInt(photoList.size());
+                                        String item = photoList.get(index);
+                                        Log.i("Loading image", item);
+                                        Glide.with(root)
+                                                .load(item)
+                                                .apply(new RequestOptions()
+                                                        .fitCenter()
+                                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                                )
+                                                .into(navBackground);
+                                    }
+
+                                });
+                            }
+                        }
+                    }, 0, 10000); // End of your timer code.
                 }
 
                 @Override
