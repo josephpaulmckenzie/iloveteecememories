@@ -117,7 +117,6 @@ public class UploadFileFragment extends Fragment {
                     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
                     intent.setType("image/*");
-                    Log.i("%$%%$$%%$$%$$%%$", String.valueOf(intent));
                     startActivityForResult(intent, REQUEST_IMAGE);
                 }
             });
@@ -165,9 +164,9 @@ public class UploadFileFragment extends Fragment {
                                         try {
                                             Log.d(TAG, "Uri: " + uri.toString());
 
-                                            ImageView imageView2 = getActivity().findViewById(R.id.imageView2);
+                                            final ImageView imageView2 = getActivity().findViewById(R.id.imageView2);
 
-                                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), Uri.parse(uri.toString()));
+                                            final Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), Uri.parse(uri.toString()));
                                             imageView2.setImageBitmap(bitmap);
 
                                             Button upload_button = getActivity().findViewById(R.id.upload_button);
@@ -175,6 +174,12 @@ public class UploadFileFragment extends Fragment {
                                                 @Override
                                                 public void onClick(View view) {
                                                     putImageInStorage(storageReference, uri, key);
+                                                    Toast.makeText(getActivity(),
+                                                            "Uploaded " + fileName +  " to Firebase",
+                                                            Toast.LENGTH_LONG)
+                                                            .show();
+                                                    imageView2.setImageResource(R.drawable.ic_newfoundland_head);
+
                                                 }
                                             });
 
