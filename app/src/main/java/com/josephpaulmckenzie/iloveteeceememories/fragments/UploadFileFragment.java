@@ -3,9 +3,11 @@ package com.josephpaulmckenzie.iloveteeceememories.fragments;
 
 import android.app.usage.NetworkStats;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -40,6 +42,7 @@ import com.josephpaulmckenzie.iloveteeceememories.constants.NavigationDrawerCons
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
@@ -77,7 +80,6 @@ public class UploadFileFragment extends Fragment {
 
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         final View root = inflater.inflate(R.layout.fragment_uploadfile, container, false);
 
 
@@ -108,8 +110,8 @@ public class UploadFileFragment extends Fragment {
                     Toast.LENGTH_LONG)
                     .show();
 
-            Button upload_button = root.findViewById(R.id.upload_button);
-            upload_button.setOnClickListener(new View.OnClickListener() {
+            Button select_image = root.findViewById(R.id.select_image);
+        select_image.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
@@ -152,15 +154,36 @@ public class UploadFileFragment extends Fragment {
                                 public void onComplete(DatabaseError databaseError,
                                                        DatabaseReference databaseReference) {
                                     if (databaseError == null) {
-                                        String key = databaseReference.getKey();
-                                        StorageReference storageReference =
+                                        final String key = databaseReference.getKey();
+                                        final StorageReference storageReference =
                                                 FirebaseStorage.getInstance()
                                                         .getReference("teeceePhotos/")
                                                         //.getReference(mFirebaseUser.getUid()) // Can be used if we want to store to a folder for user who uploads
                                                         //.child(key);
                                                         .child(fileName);
 
-                                        putImageInStorage(storageReference, uri, key);
+                                        try {
+                                            Log.d(TAG, "Uri: " + uri.toString());
+
+                                            ImageView imageView2 = getActivity().findViewById(R.id.imageView2);
+
+                                            Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), Uri.parse(uri.toString()));
+                                            imageView2.setImageBitmap(bitmap);
+
+                                            Button upload_button = getActivity().findViewById(R.id.upload_button);
+                                            upload_button.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    putImageInStorage(storageReference, uri, key);
+                                                }
+                                            });
+
+                                        } catch (IOException e) {
+                                            e.printStackTrace();
+                                        }
+
+
+
                                     } else {
                                         Log.w(TAG, "Unable to write message to database.",
                                                 databaseError.toException());
