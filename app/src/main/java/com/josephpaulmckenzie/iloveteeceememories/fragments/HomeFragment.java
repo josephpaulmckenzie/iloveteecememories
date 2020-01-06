@@ -34,6 +34,8 @@ import java.sql.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class HomeFragment extends Fragment {
     final ArrayList<String> photoList = new ArrayList<>();
@@ -76,17 +78,38 @@ public class HomeFragment extends Fragment {
                         String timeUpdated = ds.child("timeUpdated").getValue(String.class);
                     }
 
-                    Random randomGenerator = new Random();
-                    int index = randomGenerator.nextInt(photoList.size());
-                    String item = photoList.get(index);
-                    Log.i("Loading image",item);
-                    Glide.with(root)
-                        .load(item)
-                        .apply(new RequestOptions()
-                                .fitCenter()
-                                .diskCacheStrategy(DiskCacheStrategy.ALL)
-                        )
-                        .into(navBackground);
+//                    public void updateDisplay() {
+                        Timer timer = new Timer();
+                        timer.schedule(new TimerTask() {
+
+                            @Override
+                            public void run() {
+                                // Your logic here...
+
+                                // When you need to modify a UI element, do so on the UI thread.
+                                // 'getActivity()' is required as this is being ran from a Fragment.
+                                getActivity().runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Random randomGenerator = new Random();
+                                        int index = randomGenerator.nextInt(photoList.size());
+                                        String item = photoList.get(index);
+                                        Log.i("Loading image",item);
+                                        Glide.with(root)
+                                                .load(item)
+                                                .apply(new RequestOptions()
+                                                        .fitCenter()
+                                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                                )
+                                                .into(navBackground);
+                                    }
+                                });
+                            }
+                        }, 0, 10000); // End of your timer code.
+
+//                    }
+
+
                 }
 
                 @Override
