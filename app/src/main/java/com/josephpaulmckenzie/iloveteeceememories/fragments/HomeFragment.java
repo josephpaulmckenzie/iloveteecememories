@@ -53,63 +53,48 @@ public class HomeFragment extends Fragment {
         final ImageView navBackground = root.findViewById(R.id.rotating_home_image);
         TextView textView = root.findViewById(R.id.teecee_main_heading);
         textView.setText("I Love Teecee Memories");
-        // No longer needed as we control our offline capabilities using firebase and glide's image caching
-//        Boolean internetStatus = ((MainActivity) getActivity()).connectionStatus();
+        DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
+        DatabaseReference photosRef = rootRef.child("photos");
 
-//        if (internetStatus) {
-            // We have an active connection to the big ol cloud so we can serve images from somewhere out there.
-            // Currently we are using Firebase because I already know AWS S3 storage and authentication (cognito/iam)
+        ValueEventListener eventListener = new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(DataSnapshot ds : dataSnapshot.getChildren()) {
+                    String bucket = ds.child("bucket").getValue(String.class);
+                    String contentType = ds.child("contentType").getValue(String.class);
+                    String id = ds.child("id").getValue(String.class);
+                    String md5Hash = ds.child("md5Hash").getValue(String.class);
+                    String mediaLink = ds.child("mediaLink").getValue(String.class);
+                    photoList.add(mediaLink);
+                    String name = ds.child("name").getValue(String.class);
+                    String size = ds.child("size").getValue(String.class);
+                    String timeCreated = ds.child("timeCreated").getValue(String.class);
+                    String timeUpdated = ds.child("timeUpdated").getValue(String.class);
+                }
 
-            DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-            DatabaseReference photosRef = rootRef.child("photos");
-            ValueEventListener eventListener = new ValueEventListener() {
-                @Override
-                public void onDataChange(DataSnapshot dataSnapshot) {
-                    for(DataSnapshot ds : dataSnapshot.getChildren()) {
-                        String bucket = ds.child("bucket").getValue(String.class);
-                        String contentType = ds.child("contentType").getValue(String.class);
-                        String id = ds.child("id").getValue(String.class);
-                        String md5Hash = ds.child("md5Hash").getValue(String.class);
-                        String mediaLink = ds.child("mediaLink").getValue(String.class);
-                        photoList.add(mediaLink);
-                        String name = ds.child("name").getValue(String.class);
-                        String size = ds.child("size").getValue(String.class);
-                        String timeCreated = ds.child("timeCreated").getValue(String.class);
-                        String timeUpdated = ds.child("timeUpdated").getValue(String.class);
-                    }
+                    Timer timer = new Timer();
+                    timer.schedule(new TimerTask() {
 
-//                    public void updateDisplay() {
-                        Timer timer = new Timer();
-                        timer.schedule(new TimerTask() {
-
-                            @Override
-                            public void run() {
-                                // Your logic here...
-
-                                // When you need to modify a UI element, do so on the UI thread.
-                                // 'getActivity()' is required as this is being ran from a Fragment.
-                                getActivity().runOnUiThread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        Random randomGenerator = new Random();
-                                        int index = randomGenerator.nextInt(photoList.size());
-                                        String item = photoList.get(index);
-                                        Log.i("Loading image",item);
-                                        Glide.with(root)
-                                                .load(item)
-                                                .apply(new RequestOptions()
-                                                        .fitCenter()
-                                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                                )
-                                                .into(navBackground);
-                                    }
-                                });
-                            }
-                        }, 0, 10000); // End of your timer code.
-
-//                    }
-
-
+                        @Override
+                        public void run() {
+                            getActivity().runOnUiThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    Random randomGenerator = new Random();
+                                    int index = randomGenerator.nextInt(photoList.size());
+                                    String item = photoList.get(index);
+                                    Log.i("Loading image",item);
+                                    Glide.with(root)
+                                            .load(item)
+                                            .apply(new RequestOptions()
+                                                    .fitCenter()
+                                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                            )
+                                            .into(navBackground);
+                                }
+                            });
+                        }
+                    }, 0, 10000); // End of your timer code.
                 }
 
                 @Override
