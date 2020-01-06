@@ -71,30 +71,38 @@ public class HomeFragment extends Fragment {
                     String timeCreated = ds.child("timeCreated").getValue(String.class);
                     String timeUpdated = ds.child("timeUpdated").getValue(String.class);
                 }
-
-                    Timer timer = new Timer();
-                    timer.schedule(new TimerTask() {
-
-                        @Override
-                        public void run() {
-                            getActivity().runOnUiThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    Random randomGenerator = new Random();
-                                    int index = randomGenerator.nextInt(photoList.size());
-                                    String item = photoList.get(index);
-                                    Log.i("Loading image",item);
-                                    Glide.with(root)
-                                            .load(item)
-                                            .apply(new RequestOptions()
-                                                    .fitCenter()
-                                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                            )
-                                            .into(navBackground);
-                                }
-                            });
-                        }
-                    }, 0, 10000); // End of your timer code.
+                Random randomGenerator = new Random();
+                int index = randomGenerator.nextInt(photoList.size());
+                String item = photoList.get(index);
+                Glide.with(root)
+                        .load(item)
+                        .apply(new RequestOptions()
+                                .fitCenter()
+                                        .diskCacheStrategy(DiskCacheStrategy.NONE)
+                                        .skipMemoryCache(true)
+//                                .diskCacheStrategy(DiskCacheStrategy.ALL)
+                        )
+                        .into(navBackground);
+//                    Timer timer = new Timer();
+//                    timer.schedule(new TimerTask() {
+//                        @Override
+//                        public void run() {
+//                            getActivity().runOnUiThread(new Runnable() {
+//                                @Override
+//                                public void run() {
+//
+//                                    Log.i("Loading image",item);
+//                                    Glide.with(root)
+//                                            .load(item)
+//                                            .apply(new RequestOptions()
+//                                                    .fitCenter()
+//                                                    .diskCacheStrategy(DiskCacheStrategy.ALL)
+//                                            )
+//                                            .into(navBackground);
+//                                }
+//                            });
+//                        }
+//                    }, 0, 10000); // End of your timer code.
                 }
 
                 @Override

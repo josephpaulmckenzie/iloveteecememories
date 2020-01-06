@@ -2,7 +2,7 @@ package com.josephpaulmckenzie.iloveteeceememories.constants;
 
 public class NavigationDrawerConstants {
     public final static String PROFILE_URL = "https://firebasestorage.googleapis.com/v0/b/joes-react-native-app.appspot.com/o/teeceePhotos%2Fteecee.jpg?alt=media";
-    public final static String BACKGROUND_URL = "http://www.androiddeft.com/wp-content/uploads/2017/11/nav_bg.jpg";
+    public final static String BACKGROUND_URL = "";
     public final static String TAG_HOME = "Home";
     public final static String TAG_GALLERY = "Gallery";
     public final static String TAG_VIDEOS = "Videos";

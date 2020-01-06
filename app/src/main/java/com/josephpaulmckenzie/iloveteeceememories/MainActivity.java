@@ -81,29 +81,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navHeader = navigationView.getHeaderView(0);
-
         FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        // Firebase check for connection to database
-//        DatabaseReference connectedRef = FirebaseDatabase.getInstance().getReference(".info/connected");
-//
-//        connectedRef.addValueEventListener(new ValueEventListener() {
-//            @Override
-//            public void onDataChange(@NonNull DataSnapshot snapshot) {
-//                boolean connected = snapshot.getValue(Boolean.class);
-//                if (connected) {
-//                    connectionStatus = true;
-//                    Log.d("Internet is ", "Connected");
-//                } else {
-//                    Log.d("Internet is ", "Disconnected");
-//                    connectionStatus = false;
-//                }
-//            }
-//
-//            @Override
-//            public void onCancelled(@NonNull DatabaseError error) {
-//                Log.w("Cancelled", "Listener was cancelled");
-//            }
-//        });
+        final int REQUEST_IMAGE = 1;
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -118,7 +97,6 @@ public class MainActivity extends AppCompatActivity
         });
 
         // Loading profile image
-        // Attempt to first load image from url and if no connection to cloud storage will get locally
         ImageView profileImage = navHeader.findViewById(R.id.profileImage);
         Glide.with(this)
                 .load(NavigationDrawerConstants.PROFILE_URL)
