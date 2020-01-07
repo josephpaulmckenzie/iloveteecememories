@@ -1,4 +1,4 @@
-*.iml
+\*.iml
 .gradle
 /local.properties
 /.idea/workspace.xml
@@ -7,3 +7,5 @@
 /build
 /captures
 .externalNativeBuild
+app/google-services.json
+

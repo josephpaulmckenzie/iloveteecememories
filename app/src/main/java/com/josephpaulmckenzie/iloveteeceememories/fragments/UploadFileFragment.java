@@ -62,9 +62,10 @@ public class UploadFileFragment extends Fragment {
     private String mUsername;
     private static final String LOADING_IMAGE_URL = "https://www.google.com/images/spin-32.gif";
     private DatabaseReference mFirebaseDatabaseReference;
-    public static final String MESSAGES_CHILD = "photos";
+    public static String MESSAGES_CHILD;
     public static final String ANONYMOUS = "anonymous";
     public static String fileName = null;
+    public static  String fileType;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,7 +117,7 @@ public class UploadFileFragment extends Fragment {
                 public void onClick(View view) {
                     Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
                     intent.addCategory(Intent.CATEGORY_OPENABLE);
-                    intent.setType("image/*");
+                    intent.setType("*/*");
                     startActivityForResult(intent, REQUEST_IMAGE);
                 }
             });
@@ -139,6 +140,11 @@ public class UploadFileFragment extends Fragment {
 
                     try {
                         String decodedUrl = URLDecoder.decode(uri.getPath(), "UTF-8");
+                        Log.i("!!!!!!!!",decodedUrl);
+
+                       fileType = decodedUrl.substring(decodedUrl.lastIndexOf("/") + 1,decodedUrl.lastIndexOf(":"));
+                       Log.i("!!@@@@!@!!@!@!@",fileType);
+                        MESSAGES_CHILD = fileType;
                         fileName = decodedUrl.substring(decodedUrl.lastIndexOf("/") + 1);
                     } catch (UnsupportedEncodingException e) {
                         e.printStackTrace();
@@ -156,9 +162,9 @@ public class UploadFileFragment extends Fragment {
                                         final String key = databaseReference.getKey();
                                         final StorageReference storageReference =
                                                 FirebaseStorage.getInstance()
-                                                        .getReference("teeceePhotos/")
+                                                        .getReference("newfieMedia/")
                                                         //.getReference(mFirebaseUser.getUid()) // Can be used if we want to store to a folder for user who uploads
-                                                        //.child(key);
+                                                        .child(fileType)
                                                         .child(fileName);
 
                                         try {

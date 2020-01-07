@@ -21,16 +21,16 @@ public class FriendlyMessage {
     private String text;
     private String name;
     private String photoUrl;
-    private String imageUrl;
+    private String mediaUrl;
 
     public FriendlyMessage() {
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl, String imageUrl) {
+    public FriendlyMessage(String text, String name, String photoUrl, String mediaUrl) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
-        this.imageUrl = imageUrl;
+        this.mediaUrl = mediaUrl;
     }
 
     public String getId() {
@@ -65,11 +65,11 @@ public class FriendlyMessage {
         this.photoUrl = photoUrl;
     }
 
-    public String getImageUrl() {
-        return imageUrl;
+    public String getmediaUrl() {
+        return mediaUrl;
     }
 
-    public void setImageUrl(String imageUrl) {
-        this.imageUrl = imageUrl;
+    public void setmediaUrl(String mediaUrl) {
+        this.mediaUrl = mediaUrl;
     }
 }

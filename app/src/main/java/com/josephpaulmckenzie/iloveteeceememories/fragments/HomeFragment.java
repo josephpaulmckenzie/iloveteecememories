@@ -54,7 +54,7 @@ public class HomeFragment extends Fragment {
         TextView textView = root.findViewById(R.id.teecee_main_heading);
         textView.setText("I Love Teecee Memories");
         DatabaseReference rootRef = FirebaseDatabase.getInstance().getReference();
-        DatabaseReference photosRef = rootRef.child("photos");
+        DatabaseReference photosRef = rootRef.child("image");
 
         ValueEventListener eventListener = new ValueEventListener() {
             @Override
@@ -64,9 +64,9 @@ public class HomeFragment extends Fragment {
 //                    String contentType = ds.child("contentType").getValue(String.class);
 //                    String id = ds.child("id").getValue(String.class);
 //                    String md5Hash = ds.child("md5Hash").getValue(String.class);
-                    String mediaLink = ds.child("imageUrl").getValue(String.class);
-                    if (!mediaLink.equals("https://www.google.com/images/spin-32.gif")){
-                        photoList.add(mediaLink);
+                    String mediaLink = ds.child("mediaUrl").getValue(String.class);
+                    if (!mediaLink.contains("spin-32.gif")){
+                    photoList.add(mediaLink);
                     }
 
 //                    String name = ds.child("name").getValue(String.class);
