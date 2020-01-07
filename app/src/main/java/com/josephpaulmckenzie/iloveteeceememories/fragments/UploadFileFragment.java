@@ -162,10 +162,8 @@ public class UploadFileFragment extends Fragment {
                                                         .child(fileName);
 
                                         try {
-                                            Log.d(TAG, "Uri: " + uri.toString());
 
                                             final ImageView imageView2 = getActivity().findViewById(R.id.imageView2);
-
                                             final Bitmap bitmap = MediaStore.Images.Media.getBitmap(getActivity().getContentResolver(), Uri.parse(uri.toString()));
                                             imageView2.setImageBitmap(bitmap);
 
@@ -178,8 +176,6 @@ public class UploadFileFragment extends Fragment {
                                                             "Uploading " + fileName +  " to Firebase, Please wait",
                                                             Toast.LENGTH_LONG)
                                                             .show();
-//                                                    imageView2.setImageResource(R.drawable.ic_newfoundland_head);
-
                                                 }
                                             });
 

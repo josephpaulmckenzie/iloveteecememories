@@ -65,7 +65,7 @@ public class HomeFragment extends Fragment {
 //                    String id = ds.child("id").getValue(String.class);
 //                    String md5Hash = ds.child("md5Hash").getValue(String.class);
                     String mediaLink = ds.child("imageUrl").getValue(String.class);
-                    if (mediaLink != "https://www.google.com/images/spin-32.gif"){
+                    if (!mediaLink.equals("https://www.google.com/images/spin-32.gif")){
                         photoList.add(mediaLink);
                     }
 
