@@ -61,14 +61,19 @@ import java.util.Arrays;
 import java.util.List;
 
 import static com.bumptech.glide.request.RequestOptions.centerCropTransform;
+import static com.josephpaulmckenzie.iloveteeceememories.MyFirebaseMessagingService.sendRegistrationToServer;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
 
     private View navHeader;
     public boolean connectionStatus;
-
-
+    private FirebaseUser mFirebaseUser;
+    private String mUsername;
+    private FirebaseAuth fbAuth;
+    private FirebaseUser fbUser;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
     public Boolean connectionStatus() {
         return connectionStatus;
     }
@@ -92,6 +97,76 @@ public class MainActivity extends AppCompatActivity
         navHeader = navigationView.getHeaderView(0);
 //        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
 //        final int REQUEST_IMAGE = 1;
+        // Start sign in/sign up activity
+        FirebaseUser username = FirebaseAuth.getInstance().getCurrentUser();
+//        String displayName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+        List<AuthUI.IdpConfig> providers = Arrays.asList(
+                new AuthUI.IdpConfig.EmailBuilder().build(),
+                new AuthUI.IdpConfig.PhoneBuilder().build(),
+                new AuthUI.IdpConfig.GoogleBuilder().build());
+//                                    new AuthUI.IdpConfig.GitHubBuilder().build());
+//                new AuthUI.IdpConfig.FacebookBuilder().build(),
+//                new AuthUI.IdpConfig.TwitterBuilder().build());
+        if (username == null) {
+            // Start sign in/sign up activity
+            startActivityForResult(
+                    AuthUI.getInstance()
+                            .createSignInIntentBuilder()
+                            .setAvailableProviders(providers)
+                            .setLogo(R.drawable.newfiebig)
+                            .build(),
+                    554
+            );
+        }
+
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    Log.i("Logged In","Yes");
+                    FirebaseInstanceId.getInstance().getInstanceId()
+                            .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                    if (!task.isSuccessful()) {
+                                        Log.w("FIREBASE", "getInstanceId failed", task.getException());
+                                        return;
+                                    }
+
+                                    FirebaseAuth mFirebaseAuth = FirebaseAuth.getInstance();
+                                    mFirebaseUser = mFirebaseAuth.getCurrentUser();
+                                    mUsername = mFirebaseUser.getDisplayName();
+                                    String token = task.getResult().getToken();
+                                    SharedPreferences sharedPref = getSharedPreferences("FCM_TOKEN", Context.MODE_PRIVATE);
+                                    SharedPreferences.Editor editor = sharedPref.edit();
+                                    String userName = sharedPref.getString("userName","");
+                                    String fcmtoken = sharedPref.getString("fcm_token","");
+
+                                    // If either our username or fcm token has been updated and does not match what is in our shared prefs (or is newly instantiated ) we will send it to the database
+                                    if (!userName.equals(mUsername) || !fcmtoken.equals(token)){
+                                     editor.putString("fcm_token", token);
+                                     editor.putString("userName",mUsername);
+                                     editor.apply();
+                                     editor.commit();
+                                     MyFirebaseMessagingService.sendRegistrationToServer(mUsername,token);
+                                     Log.i("FCM","Updating");
+                                 } else {
+                                        Log.i("FCM","Nothing to update");
+                                    }
+
+
+                                }
+                            });
+                } else {
+                    Log.i("Logged in","No");
+                }
+            }
+        };
+        mAuth.addAuthStateListener(mAuthListener);
+
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,56 +208,10 @@ public class MainActivity extends AppCompatActivity
         }
         // [END handle_data_extras]
 
-//        Button subscribeButton = findViewById(R.id.subscribeButton);
-//        subscribeButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d(TAG, "Subscribing to weather topic");
-//                // [START subscribe_topics]
-//                FirebaseMessaging.getInstance().subscribeToTopic("weather")
-//                        .addOnCompleteListener(new OnCompleteListener<Void>() {
-//                            @Override
-//                            public void onComplete(@NonNull Task<Void> task) {
-//                                String msg = getString(R.string.msg_subscribed);
-//                                if (!task.isSuccessful()) {
-//                                    msg = getString(R.string.msg_subscribe_failed);
-//                                }
-//                                Log.d(TAG, msg);
-//                                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-//                            }
-//                        });
-//                // [END subscribe_topics]
-//            }
-//        });
 
-//        FloatingActionButton logTokenButton = findViewById(R.id.fab);
-//        logTokenButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                 Get token
-//                 [START retrieve_current_token]
-                FirebaseInstanceId.getInstance().getInstanceId()
-                        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
-                            @Override
-                            public void onComplete(@NonNull Task<InstanceIdResult> task) {
-                                if (!task.isSuccessful()) {
-                                    Log.w("FIREBASE", "getInstanceId failed", task.getException());
-                                    return;
-                                }
 
-                                // Get new Instance ID token
-                                String token = task.getResult().getToken();
 
-                                // Log and toast
-                                String msg = getString(R.string.msg_token_fmt, token);
-                                Log.d("FIREBASE", msg);
-                                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-//                 [END retrieve_current_token]
-//            }
-//        });
-//    }
+
 
 //         Loading profile image
         ImageView profileImage = navHeader.findViewById(R.id.profileImage);
@@ -245,14 +274,14 @@ public class MainActivity extends AppCompatActivity
                                     .show();
                             // Start sign in/sign up activity
                             FirebaseUser username = FirebaseAuth.getInstance().getCurrentUser();
-//        String displayName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
+                            // String displayName = FirebaseAuth.getInstance().getCurrentUser().getDisplayName();
                             List<AuthUI.IdpConfig> providers = Arrays.asList(
                                     new AuthUI.IdpConfig.EmailBuilder().build(),
                                     new AuthUI.IdpConfig.PhoneBuilder().build(),
                                     new AuthUI.IdpConfig.GoogleBuilder().build());
-//                                    new AuthUI.IdpConfig.GitHubBuilder().build());
-//                new AuthUI.IdpConfig.FacebookBuilder().build(),
-//                new AuthUI.IdpConfig.TwitterBuilder().build());
+//                                  new AuthUI.IdpConfig.GitHubBuilder().build());
+//                                  new AuthUI.IdpConfig.FacebookBuilder().build(),
+//                                  new AuthUI.IdpConfig.TwitterBuilder().build());
                             if (username == null) {
                                 // Start sign in/sign up activity
                                 startActivityForResult(

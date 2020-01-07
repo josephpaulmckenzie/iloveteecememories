@@ -1,10 +1,8 @@
 package com.josephpaulmckenzie.iloveteeceememories.fragments;
 
 
-import android.app.usage.NetworkStats;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
@@ -19,36 +17,22 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
-import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.core.Constants;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.josephpaulmckenzie.iloveteeceememories.FriendlyMessage;
-import com.josephpaulmckenzie.iloveteeceememories.MainActivity;
+import com.josephpaulmckenzie.iloveteeceememories.DatabaseUpdater;
 import com.josephpaulmckenzie.iloveteeceememories.R;
-import com.josephpaulmckenzie.iloveteeceememories.constants.NavigationDrawerConstants;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -151,7 +135,7 @@ public class UploadFileFragment extends Fragment {
                     }
 
 
-                    FriendlyMessage tempMessage = new FriendlyMessage(null, mUsername, mPhotoUrl,
+                    DatabaseUpdater tempMessage = new DatabaseUpdater(null, mUsername, mPhotoUrl,
                             LOADING_IMAGE_URL);
                     mFirebaseDatabaseReference.child(MESSAGES_CHILD).push()
                             .setValue(tempMessage, new DatabaseReference.CompletionListener() {
@@ -210,8 +194,8 @@ public class UploadFileFragment extends Fragment {
                                                 @Override
                                                 public void onComplete(@NonNull Task < Uri > task) {
                                                     if (task.isSuccessful()) {
-                                                        FriendlyMessage friendlyMessage =
-                                                                new FriendlyMessage(null, mUsername, mPhotoUrl,
+                                                        DatabaseUpdater friendlyMessage =
+                                                                new DatabaseUpdater(null, mUsername, mPhotoUrl,
                                                                         task.getResult().toString());
                                                         mFirebaseDatabaseReference.child(MESSAGES_CHILD).child(key)
                                                                 .setValue(friendlyMessage);

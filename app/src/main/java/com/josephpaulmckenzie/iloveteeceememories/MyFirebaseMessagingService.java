@@ -21,6 +21,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
@@ -30,6 +31,8 @@ import androidx.core.app.NotificationCompat;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
@@ -100,11 +103,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     @Override
     public void onNewToken(String token) {
         Log.d(TAG, "Refreshed token: " + token);
+        SharedPreferences sharedPref = getSharedPreferences("FCM_TOKEN", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+        String userName = sharedPref.getString("userName","");
+        String fcmtoken = sharedPref.getString("fcm_token","");
 
-        // If you want to send messages to this application instance or
+
         // manage this apps subscriptions on the server side, send the
         // Instance ID token to your app server.
-        sendRegistrationToServer(token);
+//        sendRegistrationToServer(userName,token);
     }
     // [END on_new_token]
 
@@ -132,11 +139,21 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * Modify this method to associate the user's FCM InstanceID token with any server-side account
      * maintained by your application.
      *
-     * @param token The new token.
+     * @param fcm_token The new token.
+     * @param userName The Display name of the user , we use this to be more friendly when sending notifications
      */
-    private void sendRegistrationToServer(String token) {
+    public static void sendRegistrationToServer(String userName, String fcm_token) {
+    Log.i("COOL BEANS",userName + " " + fcm_token);
+
+
+        }
+
+
+
         // TODO: Implement this method to send token to your app server.
-    }
+        // This is where we will send the username and fcm token to our realtime db
+
+
 
     /**
      * Create and show a simple notification containing the received FCM message.

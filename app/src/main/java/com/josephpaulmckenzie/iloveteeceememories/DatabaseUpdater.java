@@ -15,7 +15,7 @@
  */
 package com.josephpaulmckenzie.iloveteeceememories;
 
-public class FriendlyMessage {
+public class DatabaseUpdater {
 
     private String id;
     private String text;
@@ -23,10 +23,10 @@ public class FriendlyMessage {
     private String photoUrl;
     private String mediaUrl;
 
-    public FriendlyMessage() {
+    public DatabaseUpdater() {
     }
 
-    public FriendlyMessage(String text, String name, String photoUrl, String mediaUrl) {
+    public DatabaseUpdater(String text, String name, String photoUrl, String mediaUrl) {
         this.text = text;
         this.name = name;
         this.photoUrl = photoUrl;
