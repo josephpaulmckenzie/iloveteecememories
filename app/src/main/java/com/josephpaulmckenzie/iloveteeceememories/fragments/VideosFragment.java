@@ -36,6 +36,7 @@ package com.josephpaulmckenzie.iloveteeceememories.fragments;
         import java.sql.Array;
         import java.util.ArrayList;
         import java.util.List;
+        import java.util.ListIterator;
         import java.util.Random;
         import java.util.Timer;
         import java.util.TimerTask;
@@ -52,9 +53,10 @@ public class VideosFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+        final View root = inflater.inflate(R.layout.fragment_videos, container, false);
 
 
-        getActivity().setContentView(R.layout.fragment_videos);
+//        getActivity().setContentView(R.layout.fragment_videos);
 
 //        final View root = inflater.inflate(R.layout.fragment_home, container, false);
 //        final ImageView navBackground = root.findViewById(R.id.rotating_home_image);
@@ -84,45 +86,49 @@ public class VideosFragment extends Fragment {
 
                 Random randomGenerator = new Random();
                 int index = randomGenerator.nextInt(photoList.size());
-                String item = photoList.get(index);
+                final String item = photoList.get(index);
                 Log.i("Loading image", item);
 
 
-                VideoView videoView = getActivity().findViewById(R.id.vdVw);
-//                MediaController mc = new MediaController(getContext());
-//                mc.setPrevNextListeners(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        //Handle next click here
-//                        Log.i("SKIP AHEAD","!!!!!!");
-//                    }
-//                }, new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        Log.i("SKIP AHEAD behind","!!!!!!");
-//
-//                        //Handle previous click here
-//                    }
-//                });
-//                videoView.setMediaController(mc);
+                final VideoView videoView = getActivity().findViewById(R.id.vdVw);
                 //Set MediaController  to enable play, pause, forward, etc options.
-                MediaController mediaController= new MediaController(getContext());
+                final MediaController mediaController= new MediaController(getContext());
                 mediaController.setAnchorView(videoView);
                 //Location of Media File
                 Log.i("@@@@@@###@",item);
-                Uri uri = Uri.parse(item);
+                final Uri uri = Uri.parse(item);
                 //Starting VideView By Setting MediaController and URI
+                final ListIterator<String> it = photoList.listIterator();
+
                 mediaController.setPrevNextListeners(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         //Handle next click here
-                        Log.i("SKIP AHEAD","!!!!!!");
+
+                        if (it.hasNext()) {
+                            String nextVideo = it.next();
+                            Uri nextUri = Uri.parse(nextVideo);
+                            videoView.setMediaController(mediaController);
+                            videoView.setVideoURI(nextUri);
+                            videoView.requestFocus();
+                            videoView.start();
+                            Log.i("!!!!!@@@@@@ NEXT",nextVideo);
+                        }
                     }
                 }, new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
                         Log.i("SKIP AHEAD behind","!!!!!!");
+                        if (it.hasPrevious()) {
+                            String previousVideo = it.previous();
+                            Uri nextUri = Uri.parse(previousVideo);
+                            videoView.setMediaController(mediaController);
+                            videoView.setVideoURI(nextUri);
+                            videoView.requestFocus();
+                            videoView.start();
 
+                            Log.i("!!!!!@@@@@@ PREVIOUS",previousVideo);
+                        }
                         //Handle previous click here
                     }
                 });

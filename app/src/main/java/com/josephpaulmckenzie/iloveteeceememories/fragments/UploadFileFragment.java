@@ -184,13 +184,9 @@ public class UploadFileFragment extends Fragment {
                                                             .show();
                                                 }
                                             });
-
                                         } catch (IOException e) {
                                             e.printStackTrace();
                                         }
-
-
-
                                     } else {
                                         Log.w(TAG, "Unable to write message to database.",
                                                 databaseError.toException());

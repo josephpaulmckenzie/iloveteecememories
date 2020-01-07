@@ -1,5 +1,7 @@
 package com.josephpaulmckenzie.iloveteeceememories;
 
+import android.app.NotificationChannel;
+import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -7,6 +9,7 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
+import com.bumptech.glide.Priority;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 import com.firebase.ui.auth.AuthUI;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -30,6 +33,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -40,6 +44,9 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 import com.josephpaulmckenzie.iloveteeceememories.constants.NavigationDrawerConstants;
 import com.josephpaulmckenzie.iloveteeceememories.fragments.ChatRoomFragment;
 import com.josephpaulmckenzie.iloveteeceememories.fragments.GalleryFragment;
@@ -52,6 +59,8 @@ import com.bumptech.glide.request.RequestOptions;
 
 import java.util.Arrays;
 import java.util.List;
+
+import static com.bumptech.glide.request.RequestOptions.centerCropTransform;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -81,8 +90,8 @@ public class MainActivity extends AppCompatActivity
         NavigationView navigationView = findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
         navHeader = navigationView.getHeaderView(0);
-        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
-        final int REQUEST_IMAGE = 1;
+//        FirebaseDatabase.getInstance().setPersistenceEnabled(true);
+//        final int REQUEST_IMAGE = 1;
 
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,10 +105,89 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        // Loading profile image
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // Create channel to show notifications.
+            String channelId  = getString(R.string.default_notification_channel_id);
+            String channelName = getString(R.string.default_notification_channel_name);
+            NotificationManager notificationManager =
+                    getSystemService(NotificationManager.class);
+            notificationManager.createNotificationChannel(new NotificationChannel(channelId,
+                    channelName, NotificationManager.IMPORTANCE_LOW));
+        }
+
+        // If a notification message is tapped, any data accompanying the notification
+        // message is available in the intent extras. In this sample the launcher
+        // intent is fired when the notification is tapped, so any accompanying data would
+        // be handled here. If you want a different intent fired, set the click_action
+        // field of the notification message to the desired intent. The launcher intent
+        // is used when no click_action is specified.
+        //
+        // Handle possible data accompanying notification message.
+        // [START handle_data_extras]
+        if (getIntent().getExtras() != null) {
+            for (String key : getIntent().getExtras().keySet()) {
+                Object value = getIntent().getExtras().get(key);
+                Log.d("FIREBASE", "Key: " + key + " Value: " + value);
+
+            }
+        }
+        // [END handle_data_extras]
+
+//        Button subscribeButton = findViewById(R.id.subscribeButton);
+//        subscribeButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                Log.d(TAG, "Subscribing to weather topic");
+//                // [START subscribe_topics]
+//                FirebaseMessaging.getInstance().subscribeToTopic("weather")
+//                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+//                            @Override
+//                            public void onComplete(@NonNull Task<Void> task) {
+//                                String msg = getString(R.string.msg_subscribed);
+//                                if (!task.isSuccessful()) {
+//                                    msg = getString(R.string.msg_subscribe_failed);
+//                                }
+//                                Log.d(TAG, msg);
+//                                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                // [END subscribe_topics]
+//            }
+//        });
+
+//        FloatingActionButton logTokenButton = findViewById(R.id.fab);
+//        logTokenButton.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                 Get token
+//                 [START retrieve_current_token]
+                FirebaseInstanceId.getInstance().getInstanceId()
+                        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                            @Override
+                            public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                if (!task.isSuccessful()) {
+                                    Log.w("FIREBASE", "getInstanceId failed", task.getException());
+                                    return;
+                                }
+
+                                // Get new Instance ID token
+                                String token = task.getResult().getToken();
+
+                                // Log and toast
+                                String msg = getString(R.string.msg_token_fmt, token);
+                                Log.d("FIREBASE", msg);
+                                Toast.makeText(MainActivity.this, msg, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+//                 [END retrieve_current_token]
+//            }
+//        });
+//    }
+
+//         Loading profile image
         ImageView profileImage = navHeader.findViewById(R.id.profileImage);
         Glide.with(this)
-                .load(NavigationDrawerConstants.PROFILE_URL)
+                .load(R.drawable.teeceee)
                 .apply(new RequestOptions()
                         .circleCropTransform()
                         .diskCacheStrategy(DiskCacheStrategy.ALL)
@@ -107,7 +195,6 @@ public class MainActivity extends AppCompatActivity
                 .into(profileImage);
 
         //Loading background image
-
         ImageView navBackground = navHeader.findViewById(R.id.img_header_bg);
         Glide.with(this).load(NavigationDrawerConstants.BACKGROUND_URL)
                 .apply(new RequestOptions()
@@ -116,7 +203,7 @@ public class MainActivity extends AppCompatActivity
                 .thumbnail(0.5f)
                 .into(navBackground);
 
-        //Select Home by default
+        //Select Home fragment to display and load by default
         navigationView.setCheckedItem(R.id.nav_home);
         Fragment fragment = new HomeFragment();
         displaySelectedFragment(fragment);
@@ -146,10 +233,9 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
         if (id == R.id.action_logout) {
             AuthUI.getInstance()
-                    .signOut(this)
+                .signOut(this)
                     .addOnCompleteListener(new OnCompleteListener<Void>() {
                         public void onComplete(@NonNull Task<Void> task) {
                             Log.i("LOGOUT", "Log out button clicked");
@@ -164,10 +250,9 @@ public class MainActivity extends AppCompatActivity
                                     new AuthUI.IdpConfig.EmailBuilder().build(),
                                     new AuthUI.IdpConfig.PhoneBuilder().build(),
                                     new AuthUI.IdpConfig.GoogleBuilder().build());
+//                                    new AuthUI.IdpConfig.GitHubBuilder().build());
 //                new AuthUI.IdpConfig.FacebookBuilder().build(),
 //                new AuthUI.IdpConfig.TwitterBuilder().build());
-
-
                             if (username == null) {
                                 // Start sign in/sign up activity
                                 startActivityForResult(
@@ -193,7 +278,6 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
         Fragment fragment;
         final SharedPreferences sharedPref = this.getSharedPreferences("accessCodes", Context.MODE_PRIVATE);
-        Log.i("@@@@@@@", sharedPref.getString("accessCode", ""));
 
         if (id == R.id.nav_home) {
             fragment = new HomeFragment();
@@ -201,16 +285,12 @@ public class MainActivity extends AppCompatActivity
         } else if (id == R.id.nav_gallery) {
             fragment = new GalleryFragment();
             displaySelectedFragment(fragment);
-
         } else if (id == R.id.nav_videos) {
             fragment = new VideosFragment();
             displaySelectedFragment(fragment);
-
         } else if (id == R.id.nav_settings) {
             fragment = new SettingsFragment();
             displaySelectedFragment(fragment);
-
-
         } else if (id == R.id.nav_chat) {
             if (sharedPref.getString("accessCode", "").equals("Teecee2020")) {
                 Log.i("AccessCode", "Valid");
@@ -222,20 +302,14 @@ public class MainActivity extends AppCompatActivity
                 Snackbar mySnackbar = Snackbar.make(view, "Restricted Access", Snackbar.LENGTH_LONG);
                 mySnackbar.show();
                 mySnackbar.setAction("Enter or Request a code", new AccessCodeListener());
-
             }
-
         } else if (id == R.id.upload_file) {
-
             fragment = new UploadFileFragment();
             displaySelectedFragment(fragment);
-
-
         } else if (id == R.id.nav_visit_us) {
             //Open URL on click of Visit Us
             Intent urlIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(NavigationDrawerConstants.SITE_URL));
             startActivity(urlIntent);
-
         } else if (id == R.id.nav_share) {
             //Display Share Via dialogue
             Intent sharingIntent = new Intent(android.content.Intent.ACTION_SEND);
@@ -243,7 +317,6 @@ public class MainActivity extends AppCompatActivity
             sharingIntent.putExtra(android.content.Intent.EXTRA_SUBJECT, NavigationDrawerConstants.SHARE_TITLE);
             sharingIntent.putExtra(android.content.Intent.EXTRA_TEXT, NavigationDrawerConstants.SHARE_MESSAGE);
             startActivity(Intent.createChooser(sharingIntent, NavigationDrawerConstants.SHARE_VIA));
-
         }
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
@@ -261,10 +334,6 @@ public class MainActivity extends AppCompatActivity
         fragmentTransaction.commit();
     }
 
-
-    // Gets our connection status for the database back from firebase
-    ;
-
     /**
      * Get current love(s) from our firebase database ( No limit on the love <3 )
      */
@@ -280,10 +349,19 @@ public class MainActivity extends AppCompatActivity
             public void onDataChange(DataSnapshot dataSnapshot) {
                 // This method is called once with the initial value and again
                 // whenever data at this location is updated.
-                Long value = dataSnapshot.getValue(Long.class);
-                int currentLoves = Math.toIntExact(value);
-                int totalNewLoveCount = currentLoves + newLoves;
-                addNewLoves(totalNewLoveCount);
+                try {
+                    Long value = dataSnapshot.getValue(Long.class);
+                    int currentLoves = Math.toIntExact(value);
+                    int totalNewLoveCount = currentLoves + newLoves;
+                    addNewLoves(totalNewLoveCount);
+                } catch (Exception e) {
+                    // This exception covers the case where we don't have any loves in the database yet. Wont happen very often
+                    // but lets cover our bases.
+                    int currentLoves = 1;
+                    int totalNewLoveCount = currentLoves + newLoves;
+                    addNewLoves(totalNewLoveCount);
+                }
+
             }
 
             @Override
