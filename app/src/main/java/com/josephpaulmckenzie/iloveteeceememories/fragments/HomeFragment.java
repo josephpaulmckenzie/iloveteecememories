@@ -1,11 +1,14 @@
 package com.josephpaulmckenzie.iloveteeceememories.fragments;
 
+import android.app.ActivityManager;
 import android.content.ClipData;
+import android.content.Context;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
+import android.preference.PreferenceManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +17,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
+import com.google.firebase.analytics.FirebaseAnalytics;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -37,18 +41,32 @@ import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import static com.firebase.ui.auth.ui.email.RegisterEmailFragment.TAG;
+
 public class HomeFragment extends Fragment {
+    private static final boolean VERBOSE = true;
+    private FirebaseAnalytics mFirebaseAnalytics;
     final ArrayList<String> photoList = new ArrayList<>();
+
+
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getActivity().setTitle(NavigationDrawerConstants.TAG_HOME);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(getActivity());
+//
+//        mFirebaseAnalytics.setCurrentScreen(this, "HomeScreen", null /* class override */);
+
     }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+                mFirebaseAnalytics.setCurrentScreen(getActivity(), "HomeScreen", null /* class override */);
+
         final View root = inflater.inflate(R.layout.fragment_home, container, false);
         final ImageView navBackground = root.findViewById(R.id.rotating_home_image);
         TextView textView = root.findViewById(R.id.teecee_main_heading);
@@ -75,25 +93,32 @@ public class HomeFragment extends Fragment {
 //                    String timeUpdated = ds.child("timeUpdated").getValue(String.class);
                 }
 
+
                     Timer timer = new Timer();
                     timer.schedule(new TimerTask() {
+
+
                         @Override
                         public void run() {
                             if (getActivity() != null) {
                                 getActivity().runOnUiThread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Random randomGenerator = new Random();
-                                        int index = randomGenerator.nextInt(photoList.size());
-                                        String item = photoList.get(index);
-                                        Log.i("Loading image", item);
-                                        Glide.with(root)
-                                                .load(item)
-                                                .apply(new RequestOptions()
-                                                        .fitCenter()
-                                                        .diskCacheStrategy(DiskCacheStrategy.ALL)
-                                                )
-                                                .into(navBackground);
+                                        boolean appInForeground = getActivity().getWindow().getDecorView().getRootView().isShown();
+//                                        if (hi == true)
+                                        if (appInForeground == true) {
+                                            Random randomGenerator = new Random();
+                                            int index = randomGenerator.nextInt(photoList.size());
+                                            String item = photoList.get(index);
+                                            Log.i("Loading image", item);
+                                            Glide.with(root)
+                                                    .load(item)
+                                                    .apply(new RequestOptions()
+                                                            .fitCenter()
+                                                            .diskCacheStrategy(DiskCacheStrategy.ALL)
+                                                    )
+                                                    .into(navBackground);
+                                        }
                                     }
 
                                 });
@@ -103,7 +128,10 @@ public class HomeFragment extends Fragment {
                 }
 
                 @Override
-                public void onCancelled(DatabaseError databaseError) {}
+                public void onCancelled(DatabaseError databaseError) {
+
+                }
+
             };
             photosRef.addListenerForSingleValueEvent(eventListener);
         return root;

@@ -77,9 +77,22 @@ public class MainActivity extends AppCompatActivity
     public Boolean connectionStatus() {
         return connectionStatus;
     }
+    protected static boolean isVisible = false;
 
     @Override
+    public void onResume() {
+        super.onResume();
+        setVisible(true);
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        setVisible(false);
+    }
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -120,7 +133,6 @@ public class MainActivity extends AppCompatActivity
         }
 
         mAuth = FirebaseAuth.getInstance();
-
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
@@ -156,7 +168,6 @@ public class MainActivity extends AppCompatActivity
                                  } else {
                                         Log.i("FCM","Nothing to update");
                                     }
-
 
                                 }
                             });
